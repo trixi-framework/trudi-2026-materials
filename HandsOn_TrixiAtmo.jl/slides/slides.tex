@@ -1,0 +1,259 @@
+\documentclass[handout,t,fleqn,leqno,aspectratio=1610,9pt]{beamer}
+% 11pt default
+% draft, handout
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{lmodern}
+\usepackage{exscale}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{accents}
+\usepackage{textcomp}
+\usepackage{gensymb}
+\usepackage{csquotes}
+\usepackage{dsfont}
+\usepackage{microtype}
+\usepackage{xspace}
+\usepackage{siunitx}
+\usepackage{subfigure}
+\usepackage{tikz}
+\usepackage{pifont}
+\usepackage{listings}
+\usepackage{tikzsymbols}
+\usepackage[natbib=true,backend=biber,bibencoding=latin1,backref=true,style=numeric,maxnames=5,
+giveninits=true,sorting=nyt]{biblatex}
+
+
+
+
+
+\pdfsuppresswarningpagegroup=1
+
+
+
+\graphicspath{%
+{./figures/}%
+}
+
+
+\tikzstyle{every picture}=[remember picture, overlay]
+\tikzstyle{every node}=[anchor=south west, inner sep=0pt, outer sep=0pt]
+
+
+
+% color
+
+% \usecolortheme{beaver}
+% \usecolortheme{seahorse}
+% \usecolortheme{rose}
+
+
+\definecolor{checkred}   {RGB} {200,0,0}
+\definecolor{checkgreen} {RGB} {123,137,84}
+\definecolor{checkgold}  {RGB} {200,200,0}
+\definecolor{uzkblau}    {RGB} {0,81,118}
+\definecolor{uzkturkis}  {RGB} {0,157,204}
+\definecolor{uzkkorall}  {RGB} {234,86,79}
+\newcommand{\textc}[1]{\textcolor{uzkblau}{#1}}
+
+% \definecolor{myblue}{RGB}{53, 126, 199}
+% \definecolor{myblue}{RGB}{43, 116, 189}
+% \definecolor{myblue}{RGB}{33, 106, 179}
+\definecolor{myblue}{RGB}{23, 96, 169}
+% \definecolor{myblue}{RGB}{3, 76, 149}
+\setbeamercolor*{structure}{fg=uzkblau}
+
+\setbeamercolor{palette primary}{use=structure,fg=black,bg=structure.fg!30!white}
+\setbeamercolor{palette secondary}{use=structure,fg=black,bg=structure.fg!35!white}
+\setbeamercolor{palette tertiary}{use=structure,fg=black,bg=structure.fg!40!white}
+\setbeamercolor{palette quaternary}{use=structure,fg=black,bg=structure.fg!45!white}
+\setbeamercolor*{titlelike}{parent=palette primary}
+
+% \setbeamercolor{sidebar}{use=structure,bg=structure.fg!20!white}
+% \setbeamercolor{palette sidebar primary}{use=normal text,fg=normal text.fg}
+% \setbeamercolor{palette sidebar secondary}{use=structure,fg=structure.fg}
+% \setbeamercolor{palette sidebar tertiary}{use=normal text,fg=normal text.fg}
+% \setbeamercolor{palette sidebar quaternary}{use=structure,fg=structure.fg}
+% \setbeamercolor*{separation line}{}
+% \setbeamercolor*{fine separation line}{}
+
+
+
+% font
+
+\usefonttheme[onlymath]{serif}
+
+% \setbeamerfont{framesubtitle}{size=\large}
+
+
+
+%  bullet points
+
+\useinnertheme{circles}
+
+\settowidth{\leftmargini}{\usebeamertemplate{itemize item}}
+\addtolength{\leftmargini}{\labelsep}
+
+
+
+
+
+% no navigation
+\beamertemplatenavigationsymbolsempty
+
+\defbeamertemplate{footline}{toc and frame number}
+{%
+  \usebeamercolor[fg]{page number in head/foot}%
+  \usebeamerfont{page number in head/foot}%
+  \hspace{.2cm}%
+  \insertauthor,
+  \insertinstitute
+  \hfill%
+  \setbeamertemplate{page number in head/foot}[framenumber]%
+  \usebeamertemplate*{page number in head/foot}\kern1em\vskip2pt%
+}
+
+\setbeamertemplate{footline}[toc and frame number]
+
+
+\newenvironment{wideitemize}{\itemize\addtolength{\itemsep}{.5\baselineskip}}{\enditemize}
+\newenvironment{widedescription}{\description\addtolength{\itemsep}{.5\baselineskip}}{\enddescription}
+
+
+% defines
+
+\newcommand{\citepaper}[1]{{\footnotesize \color{myblue} [#1]}}
+\newcommand{\follows}{$\longrightarrow$\@\xspace}
+\newcommand{\eg}{e.\,g.\@\xspace}
+
+
+\newcommand{\good}{\textcolor{checkgreen}{\Large\ding{51}}}%
+\newcommand{\new}{\textcolor{checkgold}{\Large\ding{72}}}%
+\newcommand{\nogood}{\textcolor{checkred}{\Large\ding{56}}}%
+\newcommand{\todo}{{\Large\ding{229}}}%
+
+%\newcommand{\good}{{\color{checkgreen}\CheckmarkBold}}
+%\newcommand{\nogood}{{\color{checkred}\XSolidBold}}
+
+
+\lstset{
+%   backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+  basicstyle=\small,        % the size of the fonts that are used for the code
+%   breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+%   breaklines=true,                 % sets automatic line breaking
+%   captionpos=b,                    % sets the caption-position to bottom
+%   commentstyle=\color{mygreen},    % comment style
+%   deletekeywords={...},            % if you want to delete keywords from the given language
+%   escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+%   extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+%   firstnumber=1000,                % start line enumeration with line 1000
+%   frame=single,	                   % adds a frame around the code
+%   keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=C++,                 % the language of the code
+  morekeywords={function, end, @kernel, @index},            % if you want to add more keywords to the set
+%   numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+%   numbersep=5pt,                   % how far the line-numbers are from the code
+%   numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+%   rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+%   showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+%   showstringspaces=false,          % underline spaces within strings only
+%   showtabs=false,                  % show tabs within strings adding particular underscores
+%   stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+%   stringstyle=\color{mymauve},     % string literal style
+   tabsize=2,	                   % sets default tabsize to 2 spaces
+%   title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+
+
+% temporary grid
+% \setbeamertemplate{background}[grid][step=.5cm]
+
+% \includeonlyframes{current}
+
+
+
+\title                              {TrixiAtmo.jl}
+\author    [Atiano el al.]          {Marco Artiano, Philipp Baasch, Benedict Geihe, Tristan Montoya, Andrés Rueda-Ramírez}
+\date      [11.02.26]               {TRUDI\\[6pt]March, 16\textsuperscript{th} 2026}
+
+
+
+\begin {document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\titlepage
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Fact sheet}
+%
+\begin{wideitemize}
+ \item Initial motivation: very specific requirements in projects ADAPTEX and ICON-DG \\[6pt]
+
+ \begin{wideitemize}
+    \item ``Primite equations'' (i.e. at least moisture and precipitation, \texttt{CompressibleEulerMulticomponentEquations3D} does not work)
+    \item Covariant equations, PDEs on manifolds
+ \end{wideitemize}
+
+ \item Hardest part: figuring out the name \texttt{TrixiAtmo\textcolor{red}{s}.jl}
+
+ \item Initial commit: June, 6\textsuperscript{th} 2024
+
+ \item Official release: January, 16\textsuperscript{th} 2026
+
+ \item 12 \new
+
+ \item Contributors: Marco, Arpit, Daniel, Gregor, Benedict, Fabian, Oswald, Joshua, Tristan, Hendrik, Andrés, Michael, Andrew
+\end{wideitemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Structure}
+
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Unification}
+
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Future plans / wish list}
+
+\begin{wideitemize}
+ \item In-situ data analysis / statistics (similar to \texttt{TimeSeriesCallback} but pointwise for whole field ) \\
+       (used to evaluate Held-Suarez type simulations)
+
+ \item In-situ visualization: also for 3D data, requires fast upscaling
+
+ \item Unified post processing: e.g. to visualize projects of the globe
+
+ \item HEALPix grids
+ \begin{itemize}
+  \item alternative to cubed sphere geometry
+  \item HERA5: ERA5 data on HEALPix grid
+ \end{itemize}
+\end{wideitemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
