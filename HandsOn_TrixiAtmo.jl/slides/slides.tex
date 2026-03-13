@@ -1,4 +1,4 @@
-\documentclass[handout,t,fleqn,leqno,aspectratio=1610,9pt]{beamer}
+\documentclass[handout,t,fleqn,leqno,aspectratio=1610,10pt]{beamer}
 % 11pt default
 % draft, handout
 
@@ -199,7 +199,7 @@ giveninits=true,sorting=nyt]{biblatex}
  \item Initial motivation: very specific requirements in projects ADAPTEX and ICON-DG \\[6pt]
 
  \begin{wideitemize}
-    \item ``Primite equations'' (i.e. at least moisture and precipitation, \texttt{CompressibleEulerMulticomponentEquations3D} does not work)
+    \item ``Primite equations''\\ (i.e. at least moisture and precipitation,\\ \texttt{CompressibleEulerMulticomponentEquations3D} does not work)
     \item Covariant equations, PDEs on manifolds
  \end{wideitemize}
 
@@ -222,31 +222,36 @@ giveninits=true,sorting=nyt]{biblatex}
 \begin{frame}{Physical background}
 % [Marco]
 
-Atmospheric flows
+Special about atmospheric flows:\\[5pt]
 
-What makes it challenging / exciting / unique
+\begin{wideitemize}
 
-low Mach
+\item gravity: stratification / hydrostatic balance
 
-gravity -> stratification
+\item rotation: Coriolis force
 
-rotation, Coriolis
+\item curvature: curvilinear, covariant
 
-curvature -> curvilinear, covariant
+\item special role of vertical direction
 
-vertical direction, vastly different spatial and time scales
+\item vastly different spatial and time scales
+
+\item low Mach
+
+\end{wideitemize}
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Structure}
-% [?]
+% [Benedict]
 
-sketch
+\includegraphics[width=\textwidth]{figures/structure.pdf}
 
-long list of equations....
+Each equation comes with: fluxes, initial conditions, boundary conditions, source terms, \texttt{cons2prim} et al, \texttt{max\_abs\_speeds} et al, ...
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -257,10 +262,11 @@ long list of equations....
 \begin{frame}{Unification}
 % [Benedict]
 
-can leave this out...
+\includegraphics[width=\textwidth]{figures/unification.pdf}
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
