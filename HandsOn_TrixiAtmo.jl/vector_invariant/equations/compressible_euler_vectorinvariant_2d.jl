@@ -116,10 +116,9 @@ end
     normal_direction::AbstractVector,
     x,
     t,
-    surface_flux_functions,
+    surface_flux_function,
     equations::CompressibleEulerVectorInvariantEquations2D,
 )
-    surface_flux_function, nonconservative_flux_function = surface_flux_functions
 
     # normalize the outward pointing direction
     normal = normal_direction / norm(normal_direction)
@@ -139,44 +138,6 @@ end
     #   calculate the boundary flux
     flux, _ = surface_flux_function(u_inner, u_boundary, normal_direction, equations)
     return flux
-    #= flux = surface_flux_function(u_inner, u_boundary, normal_direction, equations)
-        noncons_flux = nonconservative_flux_function(u_inner, u_boundary, normal_direction,
-                                                     equations)
-        return flux, noncons_flux =#
-end
-
-@inline function Trixi.boundary_condition_slip_wall(
-    u_inner,
-    orientation,
-    direction,
-    x,
-    t,
-    surface_flux_functions,
-    equations::CompressibleEulerVectorInvariantEquations2D,
-)
-    surface_flux_function, nonconservative_flux_function = surface_flux_functions
-
-    ## get the appropriate normal vector from the orientation
-    if orientation == 1
-        u_boundary =
-            SVector(u_inner[1], -u_inner[2], u_inner[3], u_inner[4], u_inner[5])
-    else # orientation == 2
-        u_boundary =
-            SVector(u_inner[1], u_inner[2], -u_inner[3], u_inner[4], u_inner[5])
-    end
-
-    # Calculate boundary flux
-    if iseven(direction) # u_inner is "left" of boundary, u_boundary is "right" of boundary
-        flux = surface_flux_function(u_inner, u_boundary, orientation, equations)
-        noncons_flux =
-            nonconservative_flux_function(u_inner, u_boundary, orientation, equations)
-    else # u_boundary is "left" of boundary, u_inner is "right" of boundary
-        flux = surface_flux_function(u_boundary, u_inner, orientation, equations)
-        noncons_flux =
-            nonconservative_flux_function(u_boundary, u_inner, orientation, equations)
-    end
-
-    return flux, noncons_flux
 end
 
 @inline function flux_energy_stable(
@@ -206,18 +167,12 @@ end
     jump_v1 = v1_rr - v1_ll
     jump_v2 = v2_rr - v2_ll
 
-    rho_v_ll =
-        v1_ll * rho_ll * normal_direction[1] + v2_ll * rho_ll * normal_direction[2]
-    rho_v_rr =
-        v1_rr * rho_rr * normal_direction[1] + v2_rr * rho_rr * normal_direction[2]
+    rho_v_ll = v1_ll * rho_ll * normal_direction[1] + v2_ll * rho_ll * normal_direction[2]
+    rho_v_rr = v1_rr * rho_rr * normal_direction[1] + v2_rr * rho_rr * normal_direction[2]
     c = 340
     c_adv = 0.5f0 * abs((v_dot_n_ll + v_dot_n_rr)) / norm(normal_direction)
-    diss1 =
-        0.5f0 * c / rho_avg * (rho_v_rr - rho_v_ll) * normal_direction[1] /
-        norm(normal_direction)
-    diss2 =
-        0.5f0 * c / rho_avg * (rho_v_rr - rho_v_ll) * normal_direction[2] /
-        norm(normal_direction)
+    diss1 = 0.5f0 * c / rho_avg * (rho_v_rr - rho_v_ll) * normal_direction[1] / norm(normal_direction)
+    diss2 = 0.5f0 * c / rho_avg * (rho_v_rr - rho_v_ll) * normal_direction[2] / norm(normal_direction)
     f1 = rho_avg * 0.5f0 * (v_dot_n_ll + v_dot_n_rr)
     f2 =
         kin_avg * 0.5f0 * normal_direction[1] - diss1 -
@@ -247,6 +202,8 @@ end
     return SVector(f1, f2 + 0.5f0 * g2, f3 + 0.5f0 * g3, f4, zero(eltype(u_ll))),
     SVector(f1, f2 - 0.5f0 * g2, f3 - 0.5f0 * g3, f4, zero(eltype(u_ll)))
 end
+
+@inline Trixi.combine_conservative_and_nonconservative_fluxes(::typeof(flux_energy_stable), equations::CompressibleEulerVectorInvariantEquations2D) = Trixi.True()
 
 
 @inline function max_abs_speed(
@@ -393,7 +350,6 @@ end
     u,
     equations::CompressibleEulerVectorInvariantEquations2D,
 )
-
     _, _, _, rho_theta = u
 
     exner = (rho_theta * equations.R / equations.p_0)^(equations.R / equations.c_v)

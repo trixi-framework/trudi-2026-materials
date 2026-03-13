@@ -1,6 +1,6 @@
 using Trixi
 using Trixi:
-	True,
+	True, False,
 	get_contravariant_vector,
 	multiply_add_to_node_vars!,
 	@threaded,
@@ -29,12 +29,12 @@ end
 
 end
 
-@inline function flux_differencing_kernel!(
+@inline function Trixi.flux_differencing_kernel!(
 	_du::PtrArray,
 	u_cons::PtrArray,
 	element,
 	mesh::Union{StructuredMesh{2}, UnstructuredMesh2D, P4estMesh{2}},
-	nonconservative_terms::True,
+	have_nonconservative_terms::False,
 	equations::CompressibleEulerVectorInvariantEquations2D,
 	volume_flux::typeof(flux_invariant_turbo),
 	dg::DGSEM,

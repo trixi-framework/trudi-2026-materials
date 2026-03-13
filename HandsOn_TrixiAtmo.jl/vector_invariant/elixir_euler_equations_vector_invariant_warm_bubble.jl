@@ -99,12 +99,8 @@ function flux_zero_n(u_ll, u_rr, normal_or_orientation, equations)
     return zero(u_ll), zero(u_rr)
 end
 
-#surface_flux = (flux_surface_cons_upwind, flux_surface_noncons_upwind)
-#surface_flux = (flux_surface_total_upwind, flux_zero)
-surface_flux = (flux_energy_stable, flux_zero)
-volume_flux = (flux_invariant_turbo, flux_zero)
-#volume_flux = (flux_volume_cons, flux_volume_noncons)
-#volume_flux = (flux_zero, flux_zero)
+surface_flux = flux_energy_stable
+volume_flux = flux_invariant_turbo
 
 volume_integral = VolumeIntegralFluxDifferencing(volume_flux)
 solver = DGSEM(basis, surface_flux, volume_integral)
