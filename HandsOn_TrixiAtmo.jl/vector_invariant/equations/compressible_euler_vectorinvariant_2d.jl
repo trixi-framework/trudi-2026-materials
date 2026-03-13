@@ -96,21 +96,6 @@ have_nonconservative_terms(::CompressibleEulerVectorInvariantEquations2D) = True
 varnames(::typeof(cons2prim), ::CompressibleEulerVectorInvariantEquations2D) =
     ("rho", "v1", "v2", "p", "phi")
 
-@inline function source_terms_gravity(
-    u,
-    x,
-    t,
-    equations::CompressibleEulerVectorInvariantEquations2D,
-)
-    return SVector(
-        zero(eltype(u)),
-        zero(eltype(u)),
-        -equations.g,
-        zero(eltype(u)),
-        zero(eltype(u)),
-    )
-end
-
 @inline function Trixi.boundary_condition_slip_wall(
     u_inner,
     normal_direction::AbstractVector,
@@ -140,7 +125,7 @@ end
     return flux
 end
 
-@inline function flux_energy_stable(
+@inline function flux_artiano_entropy_stable(
     u_ll,
     u_rr,
     normal_direction::AbstractVector,
@@ -184,13 +169,12 @@ end
         0.5f0 * c_adv / rho_avg *
         (rho_rr * v2_rr - rho_ll * v2_ll) *
         norm(normal_direction)
-
+    theta_mean = Trixi.inv_ln_mean(rho_ll / rho_theta_ll, rho_rr / rho_theta_rr) 
     if f1 >= 0
-        f4 = f1 * theta_ll
+        f4 = f1 * (theta_mean -(theta_rr - theta_ll)*0.5f0)
     else
-        f4 = f1 * theta_rr
+        f4 = f1 * (theta_mean + (theta_rr - theta_ll)*0.5f0)
     end
-
     g2 =
         v2_avg * jump_v1 * normal_direction[2] -
         v2_avg * jump_v2 * normal_direction[1] +
@@ -200,7 +184,7 @@ end
         v1_avg * jump_v1 * normal_direction[2] +
         equations.c_p * theta_avg * (exner_rr - exner_ll) * normal_direction[2]
     return SVector(f1, f2 + 0.5f0 * g2, f3 + 0.5f0 * g3, f4, zero(eltype(u_ll))),
-    SVector(f1, f2 - 0.5f0 * g2, f3 - 0.5f0 * g3, f4, zero(eltype(u_ll)))
+           SVector(f1, f2 - 0.5f0 * g2, f3 - 0.5f0 * g3, f4, zero(eltype(u_ll)))
 end
 
 @inline Trixi.combine_conservative_and_nonconservative_fluxes(::typeof(flux_energy_stable), equations::CompressibleEulerVectorInvariantEquations2D) = Trixi.True()

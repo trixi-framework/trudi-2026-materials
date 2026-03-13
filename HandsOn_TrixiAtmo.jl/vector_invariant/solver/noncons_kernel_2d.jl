@@ -34,7 +34,7 @@ end
 	u_cons::PtrArray,
 	element,
 	mesh::Union{StructuredMesh{2}, UnstructuredMesh2D, P4estMesh{2}},
-	have_nonconservative_terms::False,
+	have_nonconservative_terms::True, combine_conservative_and_nonconservative_fluxes::False,
 	equations::CompressibleEulerVectorInvariantEquations2D,
 	volume_flux::typeof(flux_invariant_turbo),
 	dg::DGSEM,

@@ -60,41 +60,6 @@ basis = LobattoLegendreBasis(polydeg)
 # surface_flux_diss = FluxPlusDissipation(flux_surface_cons,DissipationLocalLaxFriedrichs(max_abs_speed_naive))
 # surface_flux = (flux_surface_cons, flux_surface_noncons)
 
-@inline function flux_volume_wb(
-    u_ll,
-    u_rr,
-    normal_direction::AbstractVector,
-    equations::CompressibleEulerVectorInvariantEquations2D,
-)
-    # Unpack left and right state
-    rho_ll, v1_ll, v2_ll, rho_theta_ll, phi_ll = u_ll
-    rho_rr, v1_rr, v2_rr, rho_theta_rr, phi_rr = u_rr
-    rho_ll, v1_ll, v2_ll, exner_ll = Invariant.cons2primexner(u_ll, equations)
-    rho_rr, v1_rr, v2_rr, exner_rr = Invariant.cons2primexner(u_rr, equations)
-    theta_ll = rho_theta_ll / rho_ll
-    theta_rr = rho_theta_rr / rho_rr
-
-    # Average each factor of products in flux
-
-    jump_v1 = v1_rr - v1_ll
-    jump_v2 = v2_rr - v1_ll
-    phi_jump = phi_rr - phi_ll
-    theta_avg = (theta_ll + theta_rr) * 0.5f0
-    theta_avg = Trixi.inv_ln_mean(1 / theta_ll, 1 / theta_rr) # isothermal wb
-    f1 = 0.0
-    f2 =
-        v2_ll * jump_v1 * normal_direction[2] - v2_ll * jump_v2 * normal_direction[1] +
-        theta_avg * (exner_rr - exner_ll) * normal_direction[1] +
-        equations.g * phi_jump * normal_direction[1]
-    f3 =
-        v1_ll * jump_v2 * normal_direction[1] - v1_ll * jump_v1 * normal_direction[2] +
-        theta_avg * (exner_rr - exner_ll) * normal_direction[2] +
-        equations.g * phi_jump * normal_direction[2]
-    #	f4 = theta_ll * (rho_rr * v1_rr - rho_ll * v1_ll) * normal_direction[1] * 0.5 + rho_ll * v1_ll * (theta_rr - theta_ll) * normal_direction[1] *0.5 +  theta_ll * (rho_rr * v2_rr - rho_ll * v2_ll) * normal_direction[2] * 0.5 + rho_ll * v2_ll * (theta_rr - theta_ll) * normal_direction[2] * 0.5  
-    f4 = 0.0
-    return SVector(f1, f2, f3, f4, 0)
-end
-
 function flux_zero_n(u_ll, u_rr, normal_or_orientation, equations)
     return zero(u_ll), zero(u_rr)
 end
