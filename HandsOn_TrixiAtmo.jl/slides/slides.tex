@@ -328,11 +328,57 @@ can leave this out...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Session: Vector invariant form}
 % [Marco]
+Implement the compressble Euler equations in vector invariant form
+\begin{equation*}
+  \begin{aligned}
+&\frac{\partial \rho}{\partial t}
++
+\nabla \cdot (\rho \mathbf{V})
+=0\\
+&\frac{\partial \mathbf{V}}{\partial t}
++
+(\nabla \times \mathbf{V}) \times \mathbf{u}
++
+\nabla\left(\frac{|\mathbf{V}|^2}{2}\right)
++
+\theta \nabla \Pi
++
+ \nabla \phi
+=0\\
+&\frac{\partial (\rho\theta)}{\partial t}
++
+\nabla \cdot (\rho\theta \mathbf{u})
+=0\\
+  \end{aligned}
+\end{equation*}
+where $p = p_0 \left ( \frac{\varrho \theta R}{p_0} \right )^{\gamma}$ and $\Pi = \left (\frac{\varrho \theta R}{p_0} \right )^{R/{c_v}}$.
 
-- try Andres topography
+\begin{equation*}
+  \begin{aligned}
+&\frac{\partial \rho}{\partial t}
++ \frac{\partial (\rho u)}{\partial x}
++ \frac{\partial (\rho v)}{\partial y}
+=0\\
+&\frac{\partial u}{\partial t}
++ v\left(\frac{\partial u}{\partial y}-\frac{\partial v}{\partial x}\right)
++ \frac{\partial}{\partial x}\left(\frac{u^2+v^2}{2}\right)
++ \theta \frac{\partial \Pi}{\partial x}
++ \frac{\partial \phi}{\partial x}
+=0\\
+&\frac{\partial v}{\partial t}
++ u\left(\frac{\partial v}{\partial x}-\frac{\partial u}{\partial y}\right)
++ \frac{\partial}{\partial y}\left(\frac{u^2+v^2}{2}\right)
++ \theta \frac{\partial \Pi}{\partial y}
++ \frac{\partial \phi}{\partial y}
+=0\\
+&\frac{\partial (\rho\theta)}{\partial t}
++ \frac{\partial (\rho\theta u)}{\partial x}
++ \frac{\partial (\rho\theta v)}{\partial y}
+=0
+  \end{aligned}
+\end{equation*}
 
-- if this fail, fall back to define your own mountain
-
+A basic code implementing the strictly necessary components is already provided. Be careful that different approaches may heavily affect the \textbf{performance}.
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
