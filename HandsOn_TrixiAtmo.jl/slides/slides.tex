@@ -178,6 +178,7 @@ giveninits=true,sorting=nyt]{biblatex}
 
 \title                              {TrixiAtmo.jl}
 \author    [Atiano el al.]          {Marco Artiano, Philipp Baasch, Benedict Geihe, Tristan Montoya, Andrés Rueda-Ramírez}
+\institute []                       {}
 \date      [11.02.26]               {TRUDI\\[6pt]March, 16\textsuperscript{th} 2026}
 
 
@@ -187,6 +188,12 @@ giveninits=true,sorting=nyt]{biblatex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \titlepage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{tikzpicture}
+\draw (current page.center) ++( -4.4, -2) node[anchor=center] {\includegraphics[width=4.5cm]{figures/logo_atmo.png}};
+\draw (current page.center) ++( 4.4, -2) node[anchor=center] {\includegraphics[width=4.5cm]{figures/barotropic_instability_topo.png}};
+\end{tikzpicture}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -196,10 +203,10 @@ giveninits=true,sorting=nyt]{biblatex}
 \begin{frame}{Fact sheet}
 % [Benedict]
 \begin{wideitemize}
- \item Initial motivation: very specific requirements in projects ADAPTEX and ICON-DG \\[6pt]
+ \item Initial motivation: specific requirements in projects ADAPTEX and ICON-DG \\[6pt]
 
  \begin{wideitemize}
-    \item ``Primite equations''\\ (i.e. at least moisture and precipitation,\\ \texttt{CompressibleEulerMulticomponentEquations3D} does not work)
+    \item ``Primite equations''\\ (i.e. at least moisture and precipitation,\\ \texttt{CompressibleEulerMulticomponentEquations3D} is not enough)
     \item Covariant equations, PDEs on manifolds
  \end{wideitemize}
 
@@ -227,6 +234,7 @@ Main features of Atmospheric flows
 \begin{itemize}
 \item Rotation and geopotential, $f = 2 \Omega \times \vec{V}$.
 \item Gravity and hydrostatic balance $\nabla p + \varrho \nabla \phi = 0$.
+% -> figures/hydrostatic.pdf
 \item Curvature (e.g. curvilinear or covariant formulations)
 \item Disparity between vertical and horizontal scales
 \begin{columns}[T] % T = top alignment
