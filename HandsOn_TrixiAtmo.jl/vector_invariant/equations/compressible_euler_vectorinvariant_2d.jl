@@ -13,46 +13,13 @@ import Trixi:
     max_abs_speed,
     max_abs_speed_naive,
     have_nonconservative_terms,
-    True, prim2cons
+    True, prim2cons, False
 # By default, Julia/LLVM does not use fused multiply-add operations (FMAs).
 # Since these FMAs can increase the performance of many numerical algorithms,
 # we need to opt-in explicitly.
 # See https://ranocha.de/blog/Optimizing_EC_Trixi for further details.
 @muladd begin
 #! format: noindent
-
-# TODO: needs to be changed
-@doc raw"""
-	CompressibleEulerVectorInvariantEquations2D(gamma)
-The compressible Euler equations
-```math
-\frac{\partial}{\partial t}
-\begin{pmatrix}
-\rho \\ \rho v_1 \\ \rho v_2 \\ \rho e
-\end{pmatrix}
-+
-\frac{\partial}{\partial x}
-\begin{pmatrix}
- \rho v_1 \\ \rho v_1^2 + p \\ \rho v_1 v_2 \\ (\rho e +p) v_1
-\end{pmatrix}
-+
-\frac{\partial}{\partial y}
-\begin{pmatrix}
-\rho v_2 \\ \rho v_1 v_2 \\ \rho v_2^2 + p \\ (\rho e +p) v_2
-\end{pmatrix}
-=
-\begin{pmatrix}
-0 \\ 0 \\ 0 \\ 0
-\end{pmatrix}
-```
-for an ideal gas with ratio of specific heats `gamma`
-in two space dimensions.
-Here, ``\rho`` is the density, ``v_1``, ``v_2`` the velocities, ``e`` the specific total energy **rather than** specific internal energy, and
-```math
-p = (\gamma - 1) \left( \rho e - \frac{1}{2} \rho (v_1^2+v_2^2) \right)
-```
-the pressure.
-"""
 
 struct CompressibleEulerVectorInvariantEquations2D{RealT<:Real} <:
        AbstractCompressibleEulerEquations{2,5}
@@ -96,13 +63,26 @@ have_nonconservative_terms(::CompressibleEulerVectorInvariantEquations2D) = True
 varnames(::typeof(cons2prim), ::CompressibleEulerVectorInvariantEquations2D) =
     ("rho", "v1", "v2", "p", "phi")
 
+
 @inline function Trixi.boundary_condition_slip_wall(
     u_inner,
     normal_direction::AbstractVector,
     x,
     t,
     surface_flux_function,
-    equations::CompressibleEulerVectorInvariantEquations2D,
+    equations::CompressibleEulerVectorInvariantEquations2D
+)
+
+    Trixi.boundary_condition_slip_wall(u_inner, normal_direction, x, t, surface_flux_function, equations, Trixi.combine_conservative_and_nonconservative_fluxes(surface_flux_function, equations))
+end    
+
+@inline function Trixi.boundary_condition_slip_wall(
+    u_inner,
+    normal_direction::AbstractVector,
+    x,
+    t,
+    surface_flux_function,
+    equations::CompressibleEulerVectorInvariantEquations2D, combine_conservative_and_nonconservative_fluxes::True
 )
 
     # normalize the outward pointing direction
@@ -125,134 +105,37 @@ varnames(::typeof(cons2prim), ::CompressibleEulerVectorInvariantEquations2D) =
     return flux
 end
 
-@inline function flux_artiano_entropy_stable(
-    u_ll,
-    u_rr,
+@inline function Trixi.boundary_condition_slip_wall(
+    u_inner,
     normal_direction::AbstractVector,
-    equations::CompressibleEulerVectorInvariantEquations2D,
+    x,
+    t,
+    surface_flux_functions,
+    equations::CompressibleEulerVectorInvariantEquations2D, combine_conservative_and_nonconservative_fluxes::False
 )
+    surface_flux_function, nonconservative_flux_function = surface_flux_functions
+    # normalize the outward pointing direction
+    normal = normal_direction / norm(normal_direction)
 
-    rho_ll, v1_ll, v2_ll, rho_theta_ll = u_ll
-    rho_rr, v1_rr, v2_rr, rho_theta_rr = u_rr
-    _, _, _, exner_ll = cons2primexner(u_ll, equations)
-    _, _, _, exner_rr = cons2primexner(u_rr, equations)
-    theta_ll = rho_theta_ll / rho_ll
-    theta_rr = rho_theta_rr / rho_rr
+    # compute the normal velocity
+    u_normal = normal[1] * u_inner[2] + normal[2] * u_inner[3]
 
-    v_dot_n_ll = v1_ll * normal_direction[1] + v2_ll * normal_direction[2]
-    v_dot_n_rr = v1_rr * normal_direction[1] + v2_rr * normal_direction[2]
+    # create the "external" boundary solution state
+    u_boundary = SVector(
+        u_inner[1],
+        u_inner[2] - 2 * u_normal * normal[1],
+        u_inner[3] - 2 * u_normal * normal[2],
+        u_inner[4],
+        u_inner[5],
+    )
 
-    # Average each factor of products in flux
-    rho_avg = 0.5f0 * (rho_ll + rho_rr)
-    kin_avg = 0.5f0 * (v1_rr * v1_rr + v2_rr * v2_rr + v1_ll * v1_ll + v2_ll * v2_ll)
-    theta_avg = 0.5f0 * (theta_ll + theta_rr)
-    v1_avg = 0.5f0 * (v1_ll + v1_rr)
-    v2_avg = 0.5f0 * (v2_ll + v2_rr)
+    #   calculate the boundary flux
+    flux = surface_flux_function(u_inner, u_boundary, normal_direction, equations)
+    noncons_flux = nonconservative_flux_function(u_inner, u_boundary, normal_direction, equations)
 
-    jump_v1 = v1_rr - v1_ll
-    jump_v2 = v2_rr - v2_ll
-
-    rho_v_ll = v1_ll * rho_ll * normal_direction[1] + v2_ll * rho_ll * normal_direction[2]
-    rho_v_rr = v1_rr * rho_rr * normal_direction[1] + v2_rr * rho_rr * normal_direction[2]
-    c = 340
-    c_adv = 0.5f0 * abs((v_dot_n_ll + v_dot_n_rr)) / norm(normal_direction)
-    diss1 = 0.5f0 * c / rho_avg * (rho_v_rr - rho_v_ll) * normal_direction[1] / norm(normal_direction)
-    diss2 = 0.5f0 * c / rho_avg * (rho_v_rr - rho_v_ll) * normal_direction[2] / norm(normal_direction)
-    f1 = rho_avg * 0.5f0 * (v_dot_n_ll + v_dot_n_rr)
-    f2 =
-        kin_avg * 0.5f0 * normal_direction[1] - diss1 -
-        0.5f0 * c_adv / rho_avg *
-        (rho_rr * v1_rr - rho_ll * v1_ll) *
-        norm(normal_direction)
-    f3 =
-        kin_avg * 0.5f0 * normal_direction[2] - diss2 -
-        0.5f0 * c_adv / rho_avg *
-        (rho_rr * v2_rr - rho_ll * v2_ll) *
-        norm(normal_direction)
-    theta_mean = Trixi.inv_ln_mean(rho_ll / rho_theta_ll, rho_rr / rho_theta_rr) 
-    if f1 >= 0
-        f4 = f1 * (theta_mean -(theta_rr - theta_ll)*0.5f0)
-    else
-        f4 = f1 * (theta_mean + (theta_rr - theta_ll)*0.5f0)
-    end
-    g2 =
-        v2_avg * jump_v1 * normal_direction[2] -
-        v2_avg * jump_v2 * normal_direction[1] +
-        equations.c_p * theta_avg * (exner_rr - exner_ll) * normal_direction[1]
-    g3 =
-        v1_avg * jump_v2 * normal_direction[1] -
-        v1_avg * jump_v1 * normal_direction[2] +
-        equations.c_p * theta_avg * (exner_rr - exner_ll) * normal_direction[2]
-    return SVector(f1, f2 + 0.5f0 * g2, f3 + 0.5f0 * g3, f4, zero(eltype(u_ll))),
-           SVector(f1, f2 - 0.5f0 * g2, f3 - 0.5f0 * g3, f4, zero(eltype(u_ll)))
+    return flux, noncons_flux
 end
 
-@inline Trixi.combine_conservative_and_nonconservative_fluxes(::typeof(flux_energy_stable), equations::CompressibleEulerVectorInvariantEquations2D) = Trixi.True()
-
-
-@inline function max_abs_speed(
-    u_ll,
-    u_rr,
-    orientation::Integer,
-    equations::CompressibleEulerVectorInvariantEquations2D,
-)
-    rho_ll, v1_ll, v2_ll, p_ll = cons2prim(u_ll, equations)
-    rho_rr, v1_rr, v2_rr, p_rr = cons2prim(u_rr, equations)
-
-    # Get the velocity value in the appropriate direction
-    if orientation == 1
-        v_ll = v1_ll
-        v_rr = v1_rr
-    else # orientation == 2
-        v_ll = v2_ll
-        v_rr = v2_rr
-    end
-    # Calculate sound speeds
-    c_ll = sqrt(equations.gamma * p_ll / rho_ll)
-    c_rr = sqrt(equations.gamma * p_rr / rho_rr)
-
-    return max(abs(v_ll) + c_ll, abs(v_rr) + c_rr)
-end
-
-@inline function min_max_speed_naive(
-    u_ll,
-    u_rr,
-    orientation::Integer,
-    equations::CompressibleEulerVectorInvariantEquations2D,
-)
-    rho_ll, v1_ll, v2_ll, p_ll = cons2prim(u_ll, equations)
-    rho_rr, v1_rr, v2_rr, p_rr = cons2prim(u_rr, equations)
-
-    if orientation == 1 # x-direction
-        λ_min = v1_ll - sqrt(equations.gamma * p_ll / rho_ll)
-        λ_max = v1_rr + sqrt(equations.gamma * p_rr / rho_rr)
-    else # y-direction
-        λ_min = v2_ll - sqrt(equations.gamma * p_ll / rho_ll)
-        λ_max = v2_rr + sqrt(equations.gamma * p_rr / rho_rr)
-    end
-
-    return λ_min, λ_max
-end
-
-@inline function max_abs_speed_naive(
-    u_ll,
-    u_rr,
-    normal_direction::AbstractVector,
-    equations::CompressibleEulerVectorInvariantEquations2D,
-)
-    rho_ll, v1_ll, v2_ll, p_ll = cons2prim(u_ll, equations)
-    rho_rr, v1_rr, v2_rr, p_rr = cons2prim(u_rr, equations)
-
-    # Calculate normal velocities and sound speed
-    # left
-    v_ll = (v1_ll * normal_direction[1] + v2_ll * normal_direction[2])
-    c_ll = sqrt(equations.gamma * p_ll / rho_ll)
-    # right
-    v_rr = (v1_rr * normal_direction[1] + v2_rr * normal_direction[2])
-    c_rr = sqrt(equations.gamma * p_rr / rho_rr)
-
-    return max(abs(v_ll), abs(v_rr)) + max(c_ll, c_rr) * norm(normal_direction)
-end
 
 # Less "cautious", i.e., less overestimating `λ_max` compared to `max_abs_speed_naive`
 @inline function max_abs_speed(
@@ -342,7 +225,7 @@ end
 
 @inline function cons2entropy(u, equations::CompressibleEulerVectorInvariantEquations2D)
     rho, v1, v2, rho_theta = u
-
+	# TODO:
     return SVector(0, 0, 0, 0, 0)
 end
 

@@ -2,7 +2,6 @@ using OrdinaryDiffEqLowStorageRK
 using Plots
 
 include("equations/compressible_euler_vectorinvariant_2d.jl")
-include("solver/noncons_kernel_2d.jl")
 
 # Initial condition
 function initial_condition_warm_bubble(
@@ -57,15 +56,23 @@ boundary_conditions = (y_neg = boundary_condition_slip_wall, y_pos = boundary_co
 polydeg = 3
 basis = LobattoLegendreBasis(polydeg)
 
-# surface_flux_diss = FluxPlusDissipation(flux_surface_cons,DissipationLocalLaxFriedrichs(max_abs_speed_naive))
-# surface_flux = (flux_surface_cons, flux_surface_noncons)
+## Here are examples of different solutions, from the slowest version to the fastest.
+## Check the file `solutions/numerical_fluxes_2d.jl` for their implementation after you gave it try implementing your own version
+#
+# include("solution/numerical_fluxes_2d.jl")
+#
+#surface_flux = (flux_conservative_surface, flux_nonconservative_surface)
+#volume_flux = (flux_conservative_volume, flux_nonconservative_volume)
 
-function flux_zero_n(u_ll, u_rr, normal_or_orientation, equations)
-    return zero(u_ll), zero(u_rr)
-end
+#surface_flux = flux_surface_combined
+#volume_flux = flux_volume_combined
 
-surface_flux = flux_energy_stable
-volume_flux = flux_invariant_turbo
+# In order to use the turbo version, please uncomment the next line:
+# include("solver/noncons_kernel_2d.jl")
+#surface_flux = flux_surface_combined
+#volume_flux = flux_volume_combined_turbo
+
+## TODO: Define surface and volume numerical fluxes for the vector invariant formulation.
 
 volume_integral = VolumeIntegralFluxDifferencing(volume_flux)
 solver = DGSEM(basis, surface_flux, volume_integral)

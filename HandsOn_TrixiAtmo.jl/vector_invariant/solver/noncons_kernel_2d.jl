@@ -14,17 +14,13 @@ using Trixi: StaticInt, indices
 @muladd begin
 
 
-@inline function flux_invariant_turbo(
+@inline function flux_volume_combined_turbo(
 		u_ll,
 		u_rr,
 		orientation_or_normal_direction,
 		equations,
 	)
-		flux_invariant(u_ll, u_rr, orientation_or_normal_direction, equations)
-end
-
-@inline function flux_zero(u_ll, u_rr, normal_direction::AbstractVector, equations)
-		return zero(u_ll)
+		flux_volume_combined(u_ll, u_rr, orientation_or_normal_direction, equations)
 end
 
 end
@@ -36,7 +32,7 @@ end
 	mesh::Union{StructuredMesh{2}, UnstructuredMesh2D, P4estMesh{2}},
 	have_nonconservative_terms::True, combine_conservative_and_nonconservative_fluxes::False,
 	equations::CompressibleEulerVectorInvariantEquations2D,
-	volume_flux::typeof(flux_invariant_turbo),
+	volume_flux::typeof(flux_volume_combined_turbo),
 	dg::DGSEM,
 	cache,
 	alpha)

@@ -7,13 +7,13 @@
 # - Paul A. Ullrich, Thomas Melvin, Christiane Jablonowski, Andrew Staniforth (2013)
 #   A proposed baroclinic wave test case for deep- and shallow-atmosphere dynamical cores
 #   https://doi.org/10.1002/qj.2241
-
-using OrdinaryDiffEqSSPRK
-using Invariant
-using Invariant.Trixi
+using Trixi
+using OrdinaryDiffEqLowStorageRK
 using LinearAlgebra: norm
 
-include("plots.jl")
+include("equations/compressible_euler_vectorinvariant_3d.jl")
+include("solver/noncons_kernel_3d.jl")
+include("utility_plots.jl")
 # Unperturbed balanced steady-state.
 # Returns primitive variables with only the velocity in longitudinal direction (rho, u, p).
 # The other velocity components are zero.
@@ -193,19 +193,20 @@ equations = CompressibleEulerVectorInvariantEquations3D(c_p = 1004, c_v = 717, g
 
 initial_condition = initial_condition_baroclinic_instability
 
-boundary_conditions = Dict(:inside => boundary_condition_slip_wall,
-                           :outside => boundary_condition_slip_wall)
+boundary_conditions = (; inside = boundary_condition_slip_wall,
+                       outside = boundary_condition_slip_wall)
 
 polydeg = 5
-surface_flux = (flux_energy_stable, flux_zero)
-volume_flux = (flux_invariant_turbo, flux_zero)
-surface_flux = (flux_energy_stable_mod, flux_zero)
-volume_flux = (flux_invariant_adv_turbo, flux_zero)
+# TODO:: Define a numerical surface flux with the combined Trixi option
+# 
+# An example is already provided in equations/compressible_euler_vectorinvariant_3d.jl
+# surface_flux = flux_surface_combined
+volume_flux = flux_volume_combined_turbo
 
 solver = DGSEM(polydeg = polydeg, surface_flux = surface_flux,
                volume_integral = VolumeIntegralFluxDifferencing(volume_flux))
 
-trees_per_cube_face = (8, 4)
+trees_per_cube_face = (5, 3)
 
 mesh = P4estMeshCubedSphere(trees_per_cube_face..., 6.371229e6, 30000,
                             polydeg = polydeg, initial_refinement_level = 0)
@@ -228,7 +229,7 @@ analysis_callback = AnalysisCallback(semi, interval = analysis_interval)
 
 alive_callback = AliveCallback(analysis_interval = analysis_interval)
 
-save_solution = SaveSolutionCallback(interval=400, save_initial_solution = true,
+save_solution = SaveSolutionCallback(interval=4000, save_initial_solution = true,
                                      save_final_solution = true)
 
 callbacks = CallbackSet(summary_callback,
@@ -239,10 +240,10 @@ callbacks = CallbackSet(summary_callback,
 ###############################################################################
 # Use a Runge-Kutta method with automatic (error based) time step size control
 # Enable threading of the RK method for better performance on multiple threads
-tol = 1e-6
-sol = solve(ode,
-            SSPRK43(thread = Trixi.True());
-            abstol = tol, reltol = tol, ode_default_options()...,
-            callback = callbacks)
 
-contour_baroclinic(sol, semi, sol, semi, trees_per_cube_face, 2 * (polydeg+  1), equations, equations)
+sol = solve(ode,
+            RDPK3SpFSAL49(thread = Trixi.True());
+            abstol = 1.0e-5, reltol = 1.0e-5, ode_default_options()...,
+            callback = callbacks);
+
+contour_baroclinic(sol, semi, trees_per_cube_face, 2 * (polydeg+  1), equations, T)
