@@ -206,7 +206,7 @@ volume_flux = flux_volume_combined_turbo
 solver = DGSEM(polydeg = polydeg, surface_flux = surface_flux,
                volume_integral = VolumeIntegralFluxDifferencing(volume_flux))
 
-trees_per_cube_face = (5, 3)
+trees_per_cube_face = (6, 3)
 
 mesh = P4estMeshCubedSphere(trees_per_cube_face..., 6.371229e6, 30000,
                             polydeg = polydeg, initial_refinement_level = 0)
@@ -217,7 +217,7 @@ semi = SemidiscretizationHyperbolic(mesh, equations, initial_condition, solver,
 const SECONDS_PER_DAY = 8.64e4
 ###############################################################################
 # ODE solvers, callbacks etc.
-T = 0 # 10 days
+T = 10 # 10 days
 tspan = (0.0, T * SECONDS_PER_DAY) # time in seconds for 10 days
 
 ode = semidiscretize(semi, tspan)

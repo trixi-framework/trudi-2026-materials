@@ -76,7 +76,7 @@ rcParams["font.family"] = "serif"  #
     axs.set_aspect(1)
   cbar[:ax][:tick_params](labelsize=30)
 
-	savefig(joinpath("test_cases/baroclinic/plots/contour_pressure_euler_$(Kh)x$(Kv)_$(T_final).png"),dpi = 600, bbox_inches="tight")
+	savefig(joinpath("contour_pressure_euler_$(Kh)x$(Kv)_$(T_final).png"),dpi = 600, bbox_inches="tight")
 	close(fig)
 	
 	    fig, axs = subplots(1, 1, figsize=(27, 20))
@@ -117,7 +117,7 @@ rcParams["font.family"] = "serif"  #
     axs.set_aspect(1)
   cbar[:ax][:tick_params](labelsize=30)
 
-	savefig(joinpath("test_cases/baroclinic/plots/contour_temperature_euler_$(Kh)x$(Kv)_$(T_final).png"),dpi = 600, bbox_inches="tight")
+	savefig(joinpath("contour_temperature_euler_$(Kh)x$(Kv)_$(T_final).png"),dpi = 600, bbox_inches="tight")
 	close(fig)
 
 end
