@@ -200,33 +200,6 @@ giveninits=true,sorting=nyt]{biblatex}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Fact sheet}
-% [Benedict]
-\begin{wideitemize}
- \item Initial motivation: specific requirements in projects ADAPTEX and ICON-DG \\[6pt]
-
- \begin{wideitemize}
-    \item ``Primite equations''\\ (i.e. at least moisture and precipitation,\\ \texttt{CompressibleEulerMulticomponentEquations3D} is not enough)
-    \item Covariant equations, PDEs on manifolds
- \end{wideitemize}
-
- \item Hardest part: figuring out the name \texttt{TrixiAtmo\textcolor{red}{s}.jl}
-
- \item Initial commit: June, 6\textsuperscript{th} 2024
-
- \item Official release: January, 16\textsuperscript{th} 2026
-
- \item 12 \new
-
- \item Contributors: Marco, Arpit, Daniel, Gregor, Benedict, Fabian, Oswald, Joshua, Tristan, Hendrik, Andrés, Michael, Andrew
-\end{wideitemize}
-
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Physical background}
 % [Marco]
 
@@ -266,14 +239,41 @@ Main features of Atmospheric flows
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Fact sheet}
+% [Benedict]
+\begin{wideitemize}
+ \item Initial motivation: specific requirements in projects ADAPTEX and ICON-DG \\[6pt]
+
+ \begin{wideitemize}
+    \item ``Primite equations''\\ (i.e. at least moisture and precipitation,\\ \texttt{CompressibleEulerMulticomponentEquations3D} is not enough)
+    \item Covariant equations, PDEs on manifolds
+ \end{wideitemize}
+
+ \item Hardest part: figuring out the name \texttt{TrixiAtmo\textcolor{red}{s}.jl}
+
+ \item Initial commit: June, 6\textsuperscript{th} 2024
+
+ \item Official release: January, 16\textsuperscript{th} 2026
+
+ \item 12 \new
+
+ \item Contributors: Marco, Arpit, Daniel, Gregor, Benedict, Fabian, Oswald, Joshua, Tristan, Hendrik, Andrés, Michael, Andrew
+\end{wideitemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Structure}
 % [Benedict]
 
 \includegraphics[width=\textwidth]{figures/structure.pdf}
 
-Each equation comes with: fluxes, initial conditions, boundary conditions, source terms, \texttt{cons2prim} et al, \texttt{max\_abs\_speeds} et al, ...
+Each equation comes with: fluxes, initial conditions, boundary conditions, source terms, \texttt{cons2prim} et al, \texttt{max\_abs\_speeds} et al, ... \\[6pt]
 
-Equations: Compressible Euler considering different thermodynamic variables (total energy, kinetic plus internal, potential temperature, internal energy) and different form of the momentum equations, such as conservative or vector invariant form.
+Equations differ in thermodynamic variables (total energy, kinetic plus internal, potential temperature, internal energy), form of the momentum equations (conservative, vector invariant), cloud microphysics, ...
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -298,8 +298,9 @@ Equations: Compressible Euler considering different thermodynamic variables (tot
 \begin{wideitemize}
  \item Unified initial data, source terms, compressible Euler equations (Cartesian)
 
- \item In-situ data analysis / statistics (similar to \texttt{TimeSeriesCallback} but pointwise for whole field ) \\
-       (used to evaluate Held-Suarez type simulations)
+ \item In-situ data analysis / statistics\\
+       (similar to \texttt{TimeSeriesCallback} but pointwise for whole field,
+       used to evaluate Held-Suarez type simulations)
 
  \item In-situ visualization: also for 3D data, requires fast upscaling
 
@@ -307,34 +308,8 @@ Equations: Compressible Euler considering different thermodynamic variables (tot
 
  \item IMEX methods: e.g. Rosenbrock and Multirate Infinitesimal Step (MIS) methods
 
- \item HEALPix grids
- \begin{itemize}
-  \item alternative to cubed sphere geometry
-  \item HERA5: ERA5 data on HEALPix grid
- \end{itemize}
+ \item HEALPix grids: alternative to cubed sphere geometry, HERA5: ERA5 data on HEALPix grid
 \end{wideitemize}
-
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Session: Quads to triangles}
-% [Philipp]
-
-
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Session: SWE with bottom topography}
-% [Tristan]
-
-- try Andres topography
-
-- if this fail, fall back to define your own mountain
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -351,6 +326,21 @@ Equations: Compressible Euler considering different thermodynamic variables (tot
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Session: SWE with bottom topography }
+% [Tristan]
+
+- try Andres topography
+
+- if this fail, fall back to define your own mountain
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 
 
@@ -414,12 +404,12 @@ A basic code implementing the strictly necessary components is already provided.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Session: Baroclinic instability on steroids}
+%\begin{frame}{Session: Baroclinic instability on steroids}
 % [Marco]
-
-- in less than 13 minutes? Woot?
-
-\end{frame}
+%
+%- in less than 13 minutes? Woot?
+%
+%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}
