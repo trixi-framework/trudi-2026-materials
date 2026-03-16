@@ -5,7 +5,46 @@
 using OrdinaryDiffEq, Trixi, TrixiAtmo, ForwardDiff, LinearAlgebra
 
 ###############################################################################
-# Spatial discretization
+
+@inline function initial_condition_smooth_mountain(x, t, equations)
+    RealT = eltype(x)
+    a = sqrt(x[1]^2 + x[2]^2 + x[3]^2)  # radius of the sphere
+    lat = asin(clamp(x[3] / a, -one(RealT), one(RealT)))
+    h_0 = 5960.0f0
+    v_0 = 20.0f0
+
+    # compute zonal and meridional components of the velocity
+    vlon, vlat = v_0 * cos(lat), zero(eltype(x))
+
+    # compute geopotential height 
+    h = h_0 -
+        1 / EARTH_GRAVITATIONAL_ACCELERATION *
+        (a * EARTH_ROTATION_RATE * v_0 + 0.5f0 * v_0^2) * (sin(lat))^2
+
+    # Convert primitive variables from spherical coordinates to the chosen global 
+    # coordinate system, which depends on the equation type
+    return TrixiAtmo.spherical2global(SVector(h, vlon, vlat, zero(RealT),
+                                    bottom_topography_smooth_mountain(x)), x,
+                            equations)
+end
+
+# Bottom topography function to pass as auxiliary_field keyword argument in constructor for 
+# SemidiscretizationHyperbolic, used with initial_condition_smooth_mountain
+@inline function bottom_topography_smooth_mountain(x)
+    RealT = eltype(x)
+    a = sqrt(x[1]^2 + x[2]^2 + x[3]^2)  # radius of the sphere
+    lon, lat = atan(x[2], x[1]), asin(clamp(x[3] / a, -one(RealT), one(RealT)))
+
+    # Position and height of mountain, noting that latitude is λ = -π/2 and not λ = 3π/2 
+    # because atan(y,x) is in [-π, π]
+    lon_0, lat_0 = convert(RealT, -π / 2), convert(RealT, π / 6)
+    b_0 = 2000.0f0
+
+    R = convert(RealT, π / 9)
+    return b_0 * exp(-((lon - lon_0)^2 + (lat - lat_0)^2) / R^2)
+end
+
+initial_condition = initial_condition_smooth_mountain
 
 # Add up the total number of auxiliary variables for equations in covariant form
 @inline function TrixiAtmo.n_aux_node_vars(::TrixiAtmo.AbstractCovariantEquations{NDIMS,
@@ -33,9 +72,9 @@ using OrdinaryDiffEq, Trixi, TrixiAtmo, ForwardDiff, LinearAlgebra
 end
 
 function TrixiAtmo.init_auxiliary_node_variables!(aux_values, mesh::DGMultiMesh,
-                                                  equations::TrixiAtmo.AbstractCovariantEquations{2, 3},
-                                                  dg::DGMulti{<:Any, <:Tri},
-                                                  bottom_topography)
+                                        equations::TrixiAtmo.AbstractCovariantEquations{2, 3},
+                                        dg::DGMulti{<:Any, <:Tri},
+                                        bottom_topography)
     rd = dg.basis
     (; xyz) = mesh.md
     md = mesh.md
@@ -59,9 +98,9 @@ function TrixiAtmo.init_auxiliary_node_variables!(aux_values, mesh::DGMultiMesh,
     # on the simulated sphere.
     VX, VY, VZ = map(coords -> coords[VMask, 1], xyz)
     v_outer = getindex.([VX, VY, VZ], 1)
-    radius = sqrt(sum(v_outer.^2))
+    radius = norm(v_outer)
 
-    for element in eachelement(mesh, dg)
+    for element in TrixiAtmo.eachelement(mesh, dg)
         # Compute corner vertices of the element
         VX, VY, VZ = map(coords -> coords[VMask, element], xyz)
         v1, v2, v3 = map(i -> getindex.([VX, VY, VZ], i), 1:3)
@@ -71,11 +110,13 @@ function TrixiAtmo.init_auxiliary_node_variables!(aux_values, mesh::DGMultiMesh,
         # Compute the auxiliary metric information at each node
         for i in 1:Trixi.nnodes(dg)
             # Covariant basis in the desired global coordinate system as columns of a matrix
-            r, s = rd.rst[1][i], rd.rst[2][i]
-            basis_covariant = TrixiAtmo.calc_basis_covariant(v1, v2, v3, r, s, radius,
+            basis_covariant = TrixiAtmo.calc_basis_covariant(v1, v2, v3,
+                                                   rd.rst[1][i], rd.rst[2][i],
+                                                   radius,
                                                    equations.global_coordinate_system)
             
             aux_node[1:6] = SVector(basis_covariant)
+            
             
             # Covariant metric tensor G := basis_covariant' * basis_covariant
             metric_covariant = basis_covariant' * basis_covariant
@@ -104,12 +145,18 @@ function TrixiAtmo.init_auxiliary_node_variables!(aux_values, mesh::DGMultiMesh,
             if !isnothing(bottom_topography)
                 x_node = map(coords -> coords[i, element], xyz)
                 aux_node[20] = bottom_topography(x_node)
-                # TODO: Fill aux_node[27, 28] with the derivatives of the bottom topography
+                # TODO: Compute the derivatives of the bottom topography and store them in aux_node[27] and aux_node[28]
             else
                 aux_node[20] = zero(eltype(aux_node))
                 aux_node[27] = zero(eltype(aux_node))
                 aux_node[28] = zero(eltype(aux_node))
             end
+            if aux_node[27] == Inf
+                aux_node[27] = zero(eltype(aux_node))
+            end
+            if aux_node[28] == Inf
+                aux_node[28] = zero(eltype(aux_node))
+             end
             aux_values[i, element] = SVector{n_aux}(aux_node)
         end
         # Christoffel symbols of the second kind (aux_values[21:26, :, :, element])
@@ -124,46 +171,6 @@ end
     return SVector{2}(aux_vars[27], aux_vars[28])
 end
 
-@inline function initial_condition_smooth_mountain(x, t, equations)
-    RealT = eltype(x)
-    a = sqrt(x[1]^2 + x[2]^2 + x[3]^2)  # radius of the sphere
-    lat = asin(x[3] / a)
-    h_0 = 5960.0f0
-    v_0 = 20.0f0
-
-    # compute zonal and meridional components of the velocity
-    vlon, vlat = v_0 * cos(lat), zero(eltype(x))
-
-    # compute geopotential height 
-    h = h_0 -
-        1 / EARTH_GRAVITATIONAL_ACCELERATION *
-        (a * EARTH_ROTATION_RATE * v_0 + 0.5f0 * v_0^2) * (sin(lat))^2
-
-    # Convert primitive variables from spherical coordinates to the chosen global 
-    # coordinate system, which depends on the equation type
-    return TrixiAtmo.spherical2global(SVector(h, vlon, vlat, zero(RealT),
-                                    bottom_topography_smooth_mountain(x)), x,
-                            equations)
-end
-
-# Bottom topography function to pass as auxiliary_field keyword argument in constructor for 
-# SemidiscretizationHyperbolic, used with initial_condition_smooth_mountain
-@inline function bottom_topography_smooth_mountain(x)
-    RealT = eltype(x)
-    a = sqrt(x[1]^2 + x[2]^2 + x[3]^2)  # radius of the sphere
-    lon, lat = atan(x[2], x[1]), asin(x[3] / a)
-
-    # Position and height of mountain, noting that latitude is λ = -π/2 and not λ = 3π/2 
-    # because atan(y,x) is in [-π, π]
-    lon_0, lat_0 = convert(RealT, -π / 2), convert(RealT, π / 6)
-    b_0 = 2000.0f0
-
-    R = convert(RealT, π / 9)
-    return b_0 * exp(-((lon - lon_0)^2 + (lat - lat_0)^2) / R^2)
-end
-
-initial_condition = initial_condition_smooth_mountain
-
 equations = CovariantShallowWaterEquations2D(EARTH_GRAVITATIONAL_ACCELERATION,
                                              EARTH_ROTATION_RATE,
                                              global_coordinate_system = GlobalCartesianCoordinates())
@@ -177,7 +184,6 @@ dg = DGMulti(element_type = Tri(),
              approximation_type = Polynomial(),
              surface_flux = flux_lax_friedrichs,
              polydeg = polydeg)
-
 
 ###############################################################################
 # Build mesh.
@@ -216,7 +222,7 @@ initial_condition_transformed = transform_initial_condition(initial_condition, e
     source_1 = s_geo[1] + f * J * (Gcon[1, 2] * h_vcon[1] - Gcon[1, 1] * h_vcon[2])
     source_2 = s_geo[2] + f * J * (Gcon[2, 2] * h_vcon[1] - Gcon[2, 1] * h_vcon[2])
 
-    # TODO: Add source terms related to the bottom topography, which depend on the derivatives of the bottom topography
+    # TODO: Add bottom topography source term
 
     # Do not scale by Jacobian since apply_jacobian! is called before this
     return SVector(zero(eltype(u)), -source_1, -source_2)
