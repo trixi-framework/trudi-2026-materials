@@ -17,7 +17,7 @@
 \usepackage{microtype}
 \usepackage{xspace}
 \usepackage{siunitx}
-\usepackage{subfigure}
+\usepackage{subcaption}
 \usepackage{tikz}
 \usepackage{pifont}
 \usepackage{listings}
@@ -27,7 +27,20 @@ giveninits=true,sorting=nyt]{biblatex}
 
 
 
+\lstdefinelanguage{Julia}{
+  keywords={function,end,if,else,elseif,for,while,return,break,continue,struct,module,using,import},
+  sensitive=true,
+  comment=[l]\#,
+  morestring=[b]",
+}
 
+\lstset{
+  language=Julia,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  frame=single
+}
 
 \pdfsuppresswarningpagegroup=1
 
@@ -401,7 +414,148 @@ A basic code implementing the strictly necessary components is already provided.
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}[fragile]{Example}
+The vector invariant form can be written in general as
+\begin{equation*}
+\partial_t \mathbf{v} + \partial_x \mathbf{f}(\mathbf{u}) + \mathbf{H}(\mathbf{u}) \partial_x \mathbf{g}(\mathbf{u}) = \mathbf{0}.
+\end{equation*}
 
+\begin{lstlisting}[language=Julia]
+#surface_flux = (flux_conservative_surface, flux_nonconservative_surface)
+#volume_flux = (flux_conservative_volume, flux_nonconservative_volume)
+
+#surface_flux = flux_surface_combined
+#volume_flux = flux_volume_combined
+
+# In order to use the turbo version, please uncomment the next line:
+# include("solver/noncons_kernel_2d.jl")
+#surface_flux = flux_surface_combined
+#volume_flux = flux_volume_combined_turbo
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Example}
+\begin{equation*}
+\partial_t \mathbf{u} + \partial_x \mathbf{f}(\mathbf{u}) + \mathbf{H}(\mathbf{u}) \partial_x \mathbf{g}(\mathbf{u}) = \mathbf{0}.
+\end{equation*}
+
+
+Nonconservative numerical flux
+\begin{lstlisting}[language=Julia]
+@inline function flux_volume_nonconservative(u_ll, u_rr, 
+                            orientation, equations)
+      
+      _, H_ll, g_ll = cons2whateverIneed(u_ll, equations)
+      _, H_rr, g_rr = cons2whateverIneed(u_rr, equations)                      
+  
+      H_mean = 0.5f0 * (H_ll + H_rr)
+      jump_g = g_rr - g_ll
+  
+#(H^num_{i+1/2} (g_i+1 - g_i) + H^num_{i-1/2} (g_i - g_i-1))/(2 Delta x)
+      f1_noncons = H_mean * jump_g 
+  
+# H_i (g_i+1 - g_i-1)/(2 Delta x)
+      f1_noncons = H_ll * g_rr       
+
+    return f1_noncons
+end
+
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]{Example}
+  \tiny
+\begin{lstlisting}[language=Julia, basicstyle=\scriptsize\ttfamily]
+@inline function flux_volume_combined(u_ll, u_rr, 
+                            orientation, equations)
+      
+      f_ll, H_ll, g_ll = cons2whateverIneed(u_ll, equations)
+      f_rr, H_rr, g_rr = cons2whateverIneed(u_rr, equations)                      
+  
+  f1 = (f_ll + f_rr)*0.5f0
+
+      H_mean = 0.5f0 * (H_ll + H_rr)
+      jump_g = g_rr - g_ll
+  
+#(H^num_{i+1/2} (g_i+1 - g_i) + H^num_{i-1/2} (g_i - g_i-1))/(2 Delta x)
+      f1_noncons = H_mean * jump_g 
+  
+# H_i (g_i+1 - g_i-1)/(2 Delta x)
+      f1_noncons = H_ll * g_rr       
+
+    f1_noncons_left = flux_nonconservative(u_ll, u_rr)
+    f1_noncons_right = flux_nonconservative(u_rr, u_ll)
+
+    return SVector(f1 + 0.5 * f1_noncons_left), 
+           SVector(f1 + 0.5 * f1_noncons_right)
+end
+\end{lstlisting}
+\begin{lstlisting}[language=Julia, basicstyle=\tiny\ttfamily]
+@inline Trixi.combine_conservative_and_nonconservative_fluxes(::typeof(flux_volume_combined),
+                           equations::CompressibleEulerVectorInvariantEquations2D) = Trixi.True()
+\end{lstlisting}
+
+\end{frame}
+
+
+\begin{frame}
+  \vfill
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plain_implementation.png}
+    \caption{Plain implementation (separated conservative and nonconservative fluxes).}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{combined.png}
+    \caption{Combined conservative and nonconservative fluxes.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{turbo_version.png}
+    \caption{Turbo combined volume fluxes.}
+  \end{subfigure}
+\end{figure}
+\vfill
+\end{frame}
+
+
+\begin{frame}{Vector invariant form}
+
+\begin{equation*}
+  \begin{aligned}
+&\frac{\partial \rho}{\partial t}
++ \frac{\partial (\rho u)}{\partial x}
++ \frac{\partial (\rho v)}{\partial y}
+=0\\
+&\frac{\partial u}{\partial t}
++ v\left(\frac{\partial u}{\partial y}-\frac{\partial v}{\partial x}\right)
++ \frac{\partial}{\partial x}\left(\frac{u^2+v^2}{2}\right)
++ \theta \frac{\partial \Pi}{\partial x}
++ \frac{\partial \phi}{\partial x}
+=0\\
+&\frac{\partial v}{\partial t}
++ u\left(\frac{\partial v}{\partial x}-\frac{\partial u}{\partial y}\right)
++ \frac{\partial}{\partial y}\left(\frac{u^2+v^2}{2}\right)
++ \theta \frac{\partial \Pi}{\partial y}
++ \frac{\partial \phi}{\partial y}
+=0\\
+&\frac{\partial (\rho\theta)}{\partial t}
++ \frac{\partial (\rho\theta u)}{\partial x}
++ \frac{\partial (\rho\theta v)}{\partial y}
+=0
+  \end{aligned}
+\end{equation*}
+
+\begin{enumerate}
+\item[\textbullet] Desing some upwinding numerical fluxes for the vector invariant form. 
+\item[\textbullet] Increase the performance by defining a \textbf{combined} flux.
+\item[\textbullet] Increase the performance by using the turbo combined fluxes provided in \textbf{noncons\_kernel\_2d.jl}.
+\end{enumerate}
+
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\begin{frame}{Session: Baroclinic instability on steroids}
