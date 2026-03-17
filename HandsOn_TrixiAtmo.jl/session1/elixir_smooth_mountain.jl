@@ -113,7 +113,7 @@ function TrixiAtmo.init_auxiliary_node_variables!(
                 aux_node[20] = bottom_topography(x_node)
                 # TODO: Compute the derivatives of the bottom topography and store them in aux_node[27] and aux_node[28]
 		
-bt(rs) = bottom_topography(TrixiAtmo.local_mapping(rs[1], rs[2], v1, v2, v3, radius))
+                bt(rs) = bottom_topography(TrixiAtmo.local_mapping(rs[1], rs[2], v1, v2, v3, radius))
                 bt_grad = ForwardDiff.gradient(bt, SVector(r, s))
                 aux_node[27] = bt_grad[1]
                 aux_node[28] = bt_grad[2]
