@@ -27,7 +27,7 @@ This is just a proof of concept and living in a branch.
   ```julia
   (run) pkg> dev --local TrixiAtmo
   ```
-- Go to `dev/TrixiAtmo.jl`
+- Go to `dev/TrixiAtmo`
 - Change the branch:
   ```shell
   git checkout bg/primitive-equations
@@ -39,7 +39,7 @@ This is just a proof of concept and living in a branch.
 
 1. Run the elixir:
     ```julia
-    julia> using Trixi; trixi_include("../examples/euler/moist_air/buoyancy_unified/elixir_bubble_bryan_fritsch.jl")
+    julia> using Trixi; trixi_include("dev/TrixiAtmo/examples/euler/moist_air/buoyancy_unified/elixir_bubble_bryan_fritsch.jl")
     ```
     You should see some upwards moving structure.
 
