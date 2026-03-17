@@ -223,22 +223,10 @@ Main features of Atmospheric flows
 % -> figures/hydrostatic.pdf
 \item Curvature (e.g. curvilinear or covariant formulations)
 \item Disparity between vertical and horizontal scales
-\begin{columns}[T] % T = top alignment
-    \column{0.7\textwidth} % left column: image
     \begin{figure}
         \centering
         \includegraphics[scale=0.12]{figures/mesh_cubedsphere.png}
     \end{figure}
-
-    \column{0.3\textwidth}
-    \vspace{1cm} % right column: equation
-\begin{equation*}
-\begin{aligned}
-& \Delta x \approx 1700 \text{km}\\
-& \Delta z \approx 7500 \text{km}
-\end{aligned}
-\end{equation*}
-\end{columns}
 \item Sound waves and low Mach numbers
  \begin{equation}
  \text{CFL} \approx \frac{\max (\lambda)  \Delta t}{\Delta x}, \quad \text{where} \max (\lambda) \approx c \ll |\vec{V}|.
