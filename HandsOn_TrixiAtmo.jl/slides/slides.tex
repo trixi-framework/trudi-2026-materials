@@ -1,0 +1,611 @@
+\documentclass[handout,t,fleqn,leqno,aspectratio=1610,10pt]{beamer}
+% 11pt default
+% draft, handout
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{lmodern}
+\usepackage{exscale}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{accents}
+\usepackage{textcomp}
+\usepackage{gensymb}
+\usepackage{csquotes}
+\usepackage{dsfont}
+\usepackage{microtype}
+\usepackage{xspace}
+\usepackage{siunitx}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{pifont}
+\usepackage{listings}
+\usepackage{tikzsymbols}
+\usepackage[natbib=true,backend=biber,bibencoding=latin1,backref=true,style=numeric,maxnames=5,
+giveninits=true,sorting=nyt]{biblatex}
+
+
+
+\lstdefinelanguage{Julia}{
+  keywords={function,end,if,else,elseif,for,while,return,break,continue,struct,module,using,import},
+  sensitive=true,
+  comment=[l]\#,
+  morestring=[b]",
+}
+
+\lstset{
+  language=Julia,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  frame=single
+}
+
+\pdfsuppresswarningpagegroup=1
+
+
+
+\graphicspath{%
+{./figures/}%
+}
+
+
+\tikzstyle{every picture}=[remember picture, overlay]
+\tikzstyle{every node}=[anchor=south west, inner sep=0pt, outer sep=0pt]
+
+
+
+% color
+
+% \usecolortheme{beaver}
+% \usecolortheme{seahorse}
+% \usecolortheme{rose}
+
+
+\definecolor{checkred}   {RGB} {200,0,0}
+\definecolor{checkgreen} {RGB} {123,137,84}
+\definecolor{checkgold}  {RGB} {200,200,0}
+\definecolor{uzkblau}    {RGB} {0,81,118}
+\definecolor{uzkturkis}  {RGB} {0,157,204}
+\definecolor{uzkkorall}  {RGB} {234,86,79}
+\newcommand{\textc}[1]{\textcolor{uzkblau}{#1}}
+
+% \definecolor{myblue}{RGB}{53, 126, 199}
+% \definecolor{myblue}{RGB}{43, 116, 189}
+% \definecolor{myblue}{RGB}{33, 106, 179}
+\definecolor{myblue}{RGB}{23, 96, 169}
+% \definecolor{myblue}{RGB}{3, 76, 149}
+\setbeamercolor*{structure}{fg=uzkblau}
+
+\setbeamercolor{palette primary}{use=structure,fg=black,bg=structure.fg!30!white}
+\setbeamercolor{palette secondary}{use=structure,fg=black,bg=structure.fg!35!white}
+\setbeamercolor{palette tertiary}{use=structure,fg=black,bg=structure.fg!40!white}
+\setbeamercolor{palette quaternary}{use=structure,fg=black,bg=structure.fg!45!white}
+\setbeamercolor*{titlelike}{parent=palette primary}
+
+% \setbeamercolor{sidebar}{use=structure,bg=structure.fg!20!white}
+% \setbeamercolor{palette sidebar primary}{use=normal text,fg=normal text.fg}
+% \setbeamercolor{palette sidebar secondary}{use=structure,fg=structure.fg}
+% \setbeamercolor{palette sidebar tertiary}{use=normal text,fg=normal text.fg}
+% \setbeamercolor{palette sidebar quaternary}{use=structure,fg=structure.fg}
+% \setbeamercolor*{separation line}{}
+% \setbeamercolor*{fine separation line}{}
+
+
+
+% font
+
+\usefonttheme[onlymath]{serif}
+
+% \setbeamerfont{framesubtitle}{size=\large}
+
+
+
+%  bullet points
+
+\useinnertheme{circles}
+
+\settowidth{\leftmargini}{\usebeamertemplate{itemize item}}
+\addtolength{\leftmargini}{\labelsep}
+
+
+
+
+
+% no navigation
+\beamertemplatenavigationsymbolsempty
+
+\defbeamertemplate{footline}{toc and frame number}
+{%
+  \usebeamercolor[fg]{page number in head/foot}%
+  \usebeamerfont{page number in head/foot}%
+  \hspace{.2cm}%
+  \insertauthor,
+  \insertinstitute
+  \hfill%
+  \setbeamertemplate{page number in head/foot}[framenumber]%
+  \usebeamertemplate*{page number in head/foot}\kern1em\vskip2pt%
+}
+
+\setbeamertemplate{footline}[toc and frame number]
+
+
+\newenvironment{wideitemize}{\itemize\addtolength{\itemsep}{.5\baselineskip}}{\enditemize}
+\newenvironment{widedescription}{\description\addtolength{\itemsep}{.5\baselineskip}}{\enddescription}
+
+
+% defines
+
+\newcommand{\citepaper}[1]{{\footnotesize \color{myblue} [#1]}}
+\newcommand{\follows}{$\longrightarrow$\@\xspace}
+\newcommand{\eg}{e.\,g.\@\xspace}
+
+
+\newcommand{\good}{\textcolor{checkgreen}{\Large\ding{51}}}%
+\newcommand{\new}{\textcolor{checkgold}{\Large\ding{72}}}%
+\newcommand{\nogood}{\textcolor{checkred}{\Large\ding{56}}}%
+\newcommand{\todo}{{\Large\ding{229}}}%
+
+%\newcommand{\good}{{\color{checkgreen}\CheckmarkBold}}
+%\newcommand{\nogood}{{\color{checkred}\XSolidBold}}
+
+
+\lstset{
+%   backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+  basicstyle=\small,        % the size of the fonts that are used for the code
+%   breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+%   breaklines=true,                 % sets automatic line breaking
+%   captionpos=b,                    % sets the caption-position to bottom
+%   commentstyle=\color{mygreen},    % comment style
+%   deletekeywords={...},            % if you want to delete keywords from the given language
+%   escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+%   extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+%   firstnumber=1000,                % start line enumeration with line 1000
+%   frame=single,	                   % adds a frame around the code
+%   keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=C++,                 % the language of the code
+  morekeywords={function, end, @kernel, @index},            % if you want to add more keywords to the set
+%   numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+%   numbersep=5pt,                   % how far the line-numbers are from the code
+%   numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+%   rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+%   showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+%   showstringspaces=false,          % underline spaces within strings only
+%   showtabs=false,                  % show tabs within strings adding particular underscores
+%   stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+%   stringstyle=\color{mymauve},     % string literal style
+   tabsize=2,	                   % sets default tabsize to 2 spaces
+%   title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+
+
+% temporary grid
+% \setbeamertemplate{background}[grid][step=.5cm]
+
+% \includeonlyframes{current}
+
+
+
+\title                              {TrixiAtmo.jl}
+\author    [Atiano el al.]          {Marco Artiano, Philipp Baasch, Benedict Geihe, Tristan Montoya, Andrés Rueda-Ramírez}
+\institute []                       {}
+\date      [11.02.26]               {TRUDI\\[6pt]March, 16\textsuperscript{th} 2026}
+
+
+
+\begin {document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\titlepage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{tikzpicture}
+\draw (current page.center) ++( -4.4, -2) node[anchor=center] {\includegraphics[width=4.5cm]{figures/logo_atmo.png}};
+\draw (current page.center) ++( 4.4, -2) node[anchor=center] {\includegraphics[width=4.5cm]{figures/barotropic_instability_topo.png}};
+\end{tikzpicture}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Physical background}
+% [Marco]
+
+Main features of Atmospheric flows
+\begin{itemize}
+\item Rotation and geopotential, $f = 2 \Omega \times \vec{V}$.
+\item Gravity and hydrostatic balance $\nabla p + \varrho \nabla \phi = 0$.
+% -> figures/hydrostatic.pdf
+\item Curvature (e.g. curvilinear or covariant formulations)
+\item Disparity between vertical and horizontal scales
+\begin{columns}[T] % T = top alignment
+    \column{0.7\textwidth} % left column: image
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.12]{figures/mesh_cubedsphere.png}
+    \end{figure}
+
+    \column{0.3\textwidth}
+    \vspace{1cm} % right column: equation
+\begin{equation*}
+\begin{aligned}
+& \Delta x \approx 1700 \text{km}\\
+& \Delta z \approx 7500 \text{km}
+\end{aligned}
+\end{equation*}
+\end{columns}
+\item Sound waves and low Mach numbers
+ \begin{equation}
+ \text{CFL} \approx \frac{\max (\lambda)  \Delta t}{\Delta x}, \quad \text{where} \max (\lambda) \approx c \ll |\vec{V}|.
+ \end{equation}
+\item Interfaces
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Fact sheet}
+% [Benedict]
+\begin{wideitemize}
+ \item Initial motivation: specific requirements in projects ADAPTEX and ICON-DG \\[6pt]
+
+ \begin{wideitemize}
+    \item ``Primite equations''\\ (i.e. at least vapor, clouds, and rain,\\ \texttt{CompressibleEulerMulticomponentEquations3D} is not enough)
+    \item Covariant equations, PDEs on manifolds
+ \end{wideitemize}
+
+ \item Idea: Test bed for advanced numerics applicable to atmospheric flows
+
+ \item Hardest part: figuring out the name \texttt{TrixiAtmo\textcolor{red}{s}.jl}
+
+ \item Initial commit: June, 6\textsuperscript{th} 2024
+
+ \item Official release: January, 16\textsuperscript{th} 2026
+
+ \item 12 \new
+
+ \item Contributors: Marco, Philipp, Arpit, Daniel, Gregor, Benedict, Fabian, Oswald, Joshua, Tristan, Hendrik, Andrés, Michael, Andrew
+\end{wideitemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Structure}
+% [Benedict]
+
+\includegraphics[width=\textwidth]{figures/structure.pdf}
+
+Each equation comes with: fluxes, initial conditions, boundary conditions, source terms, \texttt{cons2prim} et al, \texttt{max\_abs\_speeds} et al, ... \\[6pt]
+
+Equations differ in dimension, thermodynamic variables (total energy, kinetic plus internal, potential temperature, internal energy), form of the momentum equations (conservative, vector invariant), cloud microphysics, ...
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Unification}
+% [Benedict]
+
+\includegraphics[width=\textwidth]{figures/unification.pdf}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Future plans / wish list}
+% [ALL]
+
+\begin{wideitemize}
+ \item IMEX methods: e.g. Rosenbrock and Multirate Infinitesimal Step (MIS) methods
+
+ \item Unified structure
+
+ \item Online data analysis / statistics\\
+       (similar to \texttt{TimeSeriesCallback} but pointwise for whole fields,
+       used to evaluate Held-Suarez type simulations)
+
+ \item In-situ visualization: also for 3D data, requires fast upscaling
+
+ \item Unified post processing: e.g. to visualize projection of the globe
+
+ \item HEALPix grids: alternative to cubed sphere geometry, HERA5: ERA5 data on HEALPix grid
+\end{wideitemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Session}
+% [Benedict]
+
+\vfill
+\begin{center}
+\Huge{HANDS ON !}
+\end{center}
+\vfill
+
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Session: Bottom Topography in DGMulti}
+% [Philipp]
+\begin{itemize}
+    \item The DGMulti solver enables more diverse geometries (triangles, prisms, ...)
+    \item We want to add bottom topography to the solver.
+    \item  Modify the momentum source term in the elixir by adding the bottom topography contribution
+    \begin{equation*}
+    \partial_t (h v^i) + \frac{1}{J}\partial_j \left(J \tau^{ij}\right) = - f J G^{ij}\varepsilon_{jk} h v^k - \Gamma^i_{jk}\tau^{jk} - \underline{g h G^{ij}\partial_j b}
+    \end{equation*}
+    \item Use \texttt{ForwardDiff.jl} to add the local derivatives of the bottom topography $\partial_r b$ and $\partial_s b$ to the auxiliary variables in \texttt{init\_auxiliary\_variables!}.
+    \item (Alternatively differentiate the bottom topography numerically using the differentiation matrices $D_r$ and $D_s$.)
+    \item[]
+    \item Is the resulting scheme well-balanced?
+    \item Write your own wacky bottom topography!
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Session 1: Bottom Topography in DGMulti}
+% [Philipp]
+\begin{itemize}
+    \item  Modify the momentum source term in the elixir by adding the bottom topography contribution
+    \begin{equation*}
+    \partial_t (h v^i) + \frac{1}{J}\partial_j \left(J \tau^{ij}\right) = - f J G^{ij}\varepsilon_{jk} h v^k - \Gamma^i_{jk}\tau^{jk} - \underline{g h G^{ij}\partial_j b}
+    \end{equation*}
+    \item Use \texttt{ForwardDiff.jl} to add the local derivatives of the bottom topography $\partial_r b$ and $\partial_s b$ to the auxiliary variables in \texttt{init\_auxiliary\_variables!}.
+    \item (Alternatively differentiate the bottom topography numerically using the differentiation matrices $D_r$ and $D_s$.)
+    \item[]
+    \item Is the resulting scheme well-balanced?
+    \item Write your own wacky bottom topography!
+    \item[]
+    \item Useful function: \texttt{local\_mapping(r, s, v1, v2, v3, radius)} is the mapping from reference coordinates to the coordinate patch with vertices \texttt{v1, v2, v3}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Session 2: Vector invariant form}
+% [Marco]
+Implement the compressble Euler equations in vector invariant form
+\begin{equation*}
+  \begin{aligned}
+&\frac{\partial \rho}{\partial t}
++
+\nabla \cdot (\rho \mathbf{V})
+=0\\
+&\frac{\partial \mathbf{V}}{\partial t}
++
+(\nabla \times \mathbf{V}) \times \mathbf{u}
++
+\nabla\left(\frac{|\mathbf{V}|^2}{2}\right)
++
+\theta \nabla \Pi
++
+ \nabla \phi
+=0\\
+&\frac{\partial (\rho\theta)}{\partial t}
++
+\nabla \cdot (\rho\theta \mathbf{u})
+=0\\
+  \end{aligned}
+\end{equation*}
+where $p = p_0 \left ( \frac{\varrho \theta R}{p_0} \right )^{\gamma}$ and $\Pi = \left (\frac{\varrho \theta R}{p_0} \right )^{R/{c_v}}$.
+
+\begin{equation*}
+  \begin{aligned}
+&\frac{\partial \rho}{\partial t}
++ \frac{\partial (\rho u)}{\partial x}
++ \frac{\partial (\rho v)}{\partial y}
+=0\\
+&\frac{\partial u}{\partial t}
++ v\left(\frac{\partial u}{\partial y}-\frac{\partial v}{\partial x}\right)
++ \frac{\partial}{\partial x}\left(\frac{u^2+v^2}{2}\right)
++ \theta \frac{\partial \Pi}{\partial x}
++ \frac{\partial \phi}{\partial x}
+=0\\
+&\frac{\partial v}{\partial t}
++ u\left(\frac{\partial v}{\partial x}-\frac{\partial u}{\partial y}\right)
++ \frac{\partial}{\partial y}\left(\frac{u^2+v^2}{2}\right)
++ \theta \frac{\partial \Pi}{\partial y}
++ \frac{\partial \phi}{\partial y}
+=0\\
+&\frac{\partial (\rho\theta)}{\partial t}
++ \frac{\partial (\rho\theta u)}{\partial x}
++ \frac{\partial (\rho\theta v)}{\partial y}
+=0
+  \end{aligned}
+\end{equation*}
+
+A basic code implementing the strictly necessary components is already provided. Be careful that different approaches may heavily affect the \textbf{performance}.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Example}
+The vector invariant form can be written in general as
+\begin{equation*}
+\partial_t \mathbf{v} + \partial_x \mathbf{f}(\mathbf{u}) + \mathbf{H}(\mathbf{u}) \partial_x \mathbf{g}(\mathbf{u}) = \mathbf{0}.
+\end{equation*}
+
+\begin{lstlisting}[language=Julia]
+#surface_flux = (flux_conservative_surface, flux_nonconservative_surface)
+#volume_flux = (flux_conservative_volume, flux_nonconservative_volume)
+
+#surface_flux = flux_surface_combined
+#volume_flux = flux_volume_combined
+
+# In order to use the turbo version, please uncomment the next line:
+# include("solver/noncons_kernel_2d.jl")
+#surface_flux = flux_surface_combined
+#volume_flux = flux_volume_combined_turbo
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Example}
+\begin{equation*}
+\partial_t \mathbf{u} + \partial_x \mathbf{f}(\mathbf{u}) + \mathbf{H}(\mathbf{u}) \partial_x \mathbf{g}(\mathbf{u}) = \mathbf{0}.
+\end{equation*}
+
+
+Nonconservative numerical flux
+\begin{lstlisting}[language=Julia]
+@inline function flux_volume_nonconservative(u_ll, u_rr, 
+                            orientation, equations)
+      
+      _, H_ll, g_ll = cons2whateverIneed(u_ll, equations)
+      _, H_rr, g_rr = cons2whateverIneed(u_rr, equations)                      
+  
+      H_mean = 0.5f0 * (H_ll + H_rr)
+      jump_g = g_rr - g_ll
+  
+#(H^num_{i+1/2} (g_i+1 - g_i) + H^num_{i-1/2} (g_i - g_i-1))/(2 Delta x)
+      f1_noncons = H_mean * jump_g 
+  
+# H_i (g_i+1 - g_i-1)/(2 Delta x)
+      f1_noncons = H_ll * g_rr       
+
+    return f1_noncons
+end
+
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]{Example}
+  \tiny
+\begin{lstlisting}[language=Julia, basicstyle=\scriptsize\ttfamily]
+@inline function flux_volume_combined(u_ll, u_rr, 
+                            orientation, equations)
+      
+      f_ll, H_ll, g_ll = cons2whateverIneed(u_ll, equations)
+      f_rr, H_rr, g_rr = cons2whateverIneed(u_rr, equations)                      
+  
+  f1 = (f_ll + f_rr)*0.5f0
+
+      H_mean = 0.5f0 * (H_ll + H_rr)
+      jump_g = g_rr - g_ll
+  
+#(H^num_{i+1/2} (g_i+1 - g_i) + H^num_{i-1/2} (g_i - g_i-1))/(2 Delta x)
+      f1_noncons = H_mean * jump_g 
+  
+# H_i (g_i+1 - g_i-1)/(2 Delta x)
+      f1_noncons = H_ll * g_rr       
+
+    f1_noncons_left = flux_nonconservative(u_ll, u_rr)
+    f1_noncons_right = flux_nonconservative(u_rr, u_ll)
+
+    return SVector(f1 + 0.5 * f1_noncons_left), 
+           SVector(f1 + 0.5 * f1_noncons_right)
+end
+\end{lstlisting}
+\begin{lstlisting}[language=Julia, basicstyle=\tiny\ttfamily]
+@inline Trixi.combine_conservative_and_nonconservative_fluxes(::typeof(flux_volume_combined),
+                           equations::CompressibleEulerVectorInvariantEquations2D) = Trixi.True()
+\end{lstlisting}
+
+\end{frame}
+
+
+\begin{frame}
+  \vfill
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{plain_implementation.png}
+    \caption{Plain implementation (separated conservative and nonconservative fluxes).}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{combined.png}
+    \caption{Combined conservative and nonconservative fluxes.}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{turbo_version.png}
+    \caption{Turbo combined volume fluxes.}
+  \end{subfigure}
+\end{figure}
+\vfill
+\end{frame}
+
+
+\begin{frame}{Vector invariant form}
+
+\begin{equation*}
+  \begin{aligned}
+&\frac{\partial \rho}{\partial t}
++ \frac{\partial (\rho u)}{\partial x}
++ \frac{\partial (\rho v)}{\partial y}
+=0\\
+&\frac{\partial u}{\partial t}
++ v\left(\frac{\partial u}{\partial y}-\frac{\partial v}{\partial x}\right)
++ \frac{\partial}{\partial x}\left(\frac{u^2+v^2}{2}\right)
++ \theta \frac{\partial \Pi}{\partial x}
++ \frac{\partial \phi}{\partial x}
+=0\\
+&\frac{\partial v}{\partial t}
++ u\left(\frac{\partial v}{\partial x}-\frac{\partial u}{\partial y}\right)
++ \frac{\partial}{\partial y}\left(\frac{u^2+v^2}{2}\right)
++ \theta \frac{\partial \Pi}{\partial y}
++ \frac{\partial \phi}{\partial y}
+=0\\
+&\frac{\partial (\rho\theta)}{\partial t}
++ \frac{\partial (\rho\theta u)}{\partial x}
++ \frac{\partial (\rho\theta v)}{\partial y}
+=0
+  \end{aligned}
+\end{equation*}
+
+\begin{enumerate}
+\item[\textbullet] Desing some upwinding numerical fluxes for the vector invariant form. 
+\item[\textbullet] Increase the performance by defining a \textbf{combined} flux.
+\item[\textbullet] Increase the performance by using the turbo combined fluxes provided in \textbf{noncons\_kernel\_2d.jl}.
+\item[\textbullet] Which changes are required to make the flux entropy stable/conservative? 
+\end{enumerate}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Session: unified structure}
+% [Benedict]
+
+See \texttt{README.md}!
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}{Session: Baroclinic instability on steroids}
+% [Marco]
+%
+%- in less than 13 minutes? Woot?
+%
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
