@@ -2,7 +2,7 @@
 # DGSEM for the linear advection equation on a prismed icosahedral grid
 ###############################################################################
 
-using OrdinaryDiffEq, Trixi, TrixiAtmo, ForwardDiff, LinearAlgebra
+using OrdinaryDiffEqLowStorageRK, Trixi, TrixiAtmo, ForwardDiff, LinearAlgebra
 
 ###############################################################################
 # Auxiliary variables for covariant equations with bottom topography in source terms
