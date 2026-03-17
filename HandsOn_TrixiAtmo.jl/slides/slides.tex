@@ -343,13 +343,38 @@ Equations differ in thermodynamic variables (total energy, kinetic plus internal
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Session: SWE with bottom topography }
-% [Tristan]
+\begin{frame}{Session 1: Bottom Topography in DGMulti}
+% [Philipp]
+\begin{itemize}
+    \item The DGMulti solver enables more diverse geometries (triangles, prisms, ...)
+    \item We want to add bottom topography to the solver.
+    \item  Modify the momentum source term in the elixir by adding the bottom topography contribution
+    \begin{equation*}
+    \partial_t (h v^i) + \frac{1}{J}\partial_j \left(J \tau^{ij}\right) = - f J G^{ij}\varepsilon_{jk} h v^k - \Gamma^i_{jk}\tau^{jk} - \underline{g h G^{ij}\partial_j b}
+    \end{equation*}
+    \item Use \texttt{ForwardDiff.jl} to add the local derivatives of the bottom topography $\partial_r b$ and $\partial_s b$ to the auxiliary variables in \texttt{init\_auxiliary\_variables!}.
+    \item (Alternatively differentiate the bottom topography numerically using the differentiation matrices $D_r$ and $D_s$.)
+    \item[]
+    \item Is the resulting scheme well-balanced?
+    \item Write your own wacky bottom topography!
+\end{itemize}
+\end{frame}
 
-- try Andres topography
-
-- if this fail, fall back to define your own mountain
-
+\begin{frame}{Session 1: Bottom Topography in DGMulti}
+% [Philipp]
+\begin{itemize}
+    \item  Modify the momentum source term in the elixir by adding the bottom topography contribution
+    \begin{equation*}
+    \partial_t (h v^i) + \frac{1}{J}\partial_j \left(J \tau^{ij}\right) = - f J G^{ij}\varepsilon_{jk} h v^k - \Gamma^i_{jk}\tau^{jk} - \underline{g h G^{ij}\partial_j b}
+    \end{equation*}
+    \item Use \texttt{ForwardDiff.jl} to add the local derivatives of the bottom topography $\partial_r b$ and $\partial_s b$ to the auxiliary variables in \texttt{init\_auxiliary\_variables!}.
+    \item (Alternatively differentiate the bottom topography numerically using the differentiation matrices $D_r$ and $D_s$.)
+    \item[]
+    \item Is the resulting scheme well-balanced?
+    \item Write your own wacky bottom topography!
+    \item[]
+    \item Useful function: \texttt{local\_mapping(r, s, v1, v2, v3, radius)} is the mapping from reference coordinates to the coordinate patch with vertices \texttt{v1, v2, v3}
+\end{itemize}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
