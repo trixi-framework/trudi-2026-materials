@@ -73,14 +73,8 @@ function TrixiAtmo.init_auxiliary_node_variables!(
         for i = 1:Trixi.nnodes(dg)
             r, s = rd.rst[1][i], rd.rst[2][i]
             # Covariant basis in the desired global coordinate system as columns of a matrix
-            basis_covariant = TrixiAtmo.calc_basis_covariant(
-                v1,
-                v2,
-                v3,
-                r,
-                s,
-                radius,
-                equations.global_coordinate_system,
+            basis_covariant = TrixiAtmo.calc_basis_covariant(v1, v2, v3, r, s, 
+                radius, equations.global_coordinate_system,
             )
 
             aux_node[1:6] = SVector(basis_covariant)
@@ -140,8 +134,7 @@ end
 
 # Extract the derivatives of the bottom topography ∂hₛ/∂r and ∂hₛ/∂s from the auxiliary variables
 @inline function bottom_topography_derivatives(
-    aux_vars,
-    ::TrixiAtmo.AbstractCovariantEquations{2},
+    aux_vars, ::TrixiAtmo.AbstractCovariantEquations{2},
 )
     return SVector{2}(aux_vars[27], aux_vars[28])
 end
@@ -226,12 +219,8 @@ initial_condition_transformed = transform_initial_condition(initial_condition, e
 
 # Standard geometric and Coriolis source terms for a rotating sphere
 @inline function source_terms_geometric_coriolis_bottom_topography(
-    u,
-    x,
-    t,
-    aux_vars,
-    equations::CovariantShallowWaterEquations2D,
-)
+    u, x, t, aux_vars,equations::CovariantShallowWaterEquations2D
+    )
     # Geometric variables
     Gcon = TrixiAtmo.metric_contravariant(aux_vars, equations)
     Gamma1, Gamma2 = TrixiAtmo.christoffel_symbols(aux_vars, equations)
@@ -263,10 +252,7 @@ end
 
 # A semidiscretization collects data structures and functions for the spatial discretization
 semi = SemidiscretizationHyperbolic(
-    mesh,
-    equations,
-    initial_condition_transformed,
-    dg,
+    mesh, equations, initial_condition_transformed, dg,
     source_terms = source_terms_geometric_coriolis_bottom_topography,
     auxiliary_field = bottom_topography_smooth_mountain,
 )
@@ -308,10 +294,5 @@ callbacks =
 
 # OrdinaryDiffEq's `solve` method evolves the solution in time and executes the passed 
 # callbacks
-sol = solve(
-    ode,
-    CarpenterKennedy2N54(williamson_condition = false),
-    dt = 1.0,
-    save_everystep = false,
-    callback = callbacks,
-)
+sol = solve(ode, CarpenterKennedy2N54(williamson_condition = false), dt = 1.0,
+            save_everystep = false, callback = callbacks)
