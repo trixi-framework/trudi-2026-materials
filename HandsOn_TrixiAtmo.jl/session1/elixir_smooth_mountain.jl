@@ -112,6 +112,11 @@ function TrixiAtmo.init_auxiliary_node_variables!(
                 x_node = map(coords -> coords[i, element], xyz)
                 aux_node[20] = bottom_topography(x_node)
                 # TODO: Compute the derivatives of the bottom topography and store them in aux_node[27] and aux_node[28]
+		
+bt(rs) = bottom_topography(TrixiAtmo.local_mapping(rs[1], rs[2], v1, v2, v3, radius))
+                bt_grad = ForwardDiff.gradient(bt, SVector(r, s))
+                aux_node[27] = bt_grad[1]
+                aux_node[28] = bt_grad[2]
             else
                 aux_node[20] = zero(eltype(aux_node))
                 aux_node[27] = zero(eltype(aux_node))
@@ -246,6 +251,9 @@ initial_condition_transformed = transform_initial_condition(initial_condition, e
     source_2 = s_geo[2] + f * J * (Gcon[2, 2] * h_vcon[1] - Gcon[2, 1] * h_vcon[2])
 
     # TODO: Add bottom topography source term
+    bt_grad = bottom_topography_derivatives(aux_vars, equations)
+    source_1 += equations.gravity * h * (Gcon[1, 1] * bt_grad[1] + Gcon[1, 2] * bt_grad[2])
+    source_2 += equations.gravity * h * (Gcon[2, 1] * bt_grad[1] + Gcon[2, 2] * bt_grad[2])
 
     # Do not scale by Jacobian since apply_jacobian! is called before this
     return SVector(zero(eltype(u)), -source_1, -source_2)
