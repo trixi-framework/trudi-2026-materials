@@ -215,6 +215,7 @@ mesh = DGMultiMeshTriIcosahedron2D(
 )
 
 # Transform the initial condition to the proper set of conservative variables
+initial_condition = initial_condition_smooth_mountain
 initial_condition_transformed = transform_initial_condition(initial_condition, equations)
 
 # Standard geometric and Coriolis source terms for a rotating sphere
