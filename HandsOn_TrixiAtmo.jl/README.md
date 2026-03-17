@@ -3,7 +3,7 @@
 Instantiate a Julia project using the files in the current directory.
 
 ```shell
-julia --project -e 'using Pkg; Pkg.initiate()'
+julia --project -e 'using Pkg; Pkg.instantiate()'
 ```
 
 ## SWE with bottom topography
