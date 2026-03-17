@@ -348,7 +348,7 @@ Equations differ in dimension, thermodynamic variables (total energy, kinetic pl
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Session: Bottom Topography in DGMulti}
+\begin{frame}{Bottom Topography in DGMulti}
 % [Philipp]
 \begin{itemize}
     \item The DGMulti solver enables more diverse geometries (triangles, prisms, ...)
@@ -365,7 +365,7 @@ Equations differ in dimension, thermodynamic variables (total energy, kinetic pl
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Session 1: Bottom Topography in DGMulti}
+\begin{frame}{Bottom Topography in DGMulti}
 % [Philipp]
 \begin{itemize}
     \item  Modify the momentum source term in the elixir by adding the bottom topography contribution
@@ -388,7 +388,7 @@ Equations differ in dimension, thermodynamic variables (total energy, kinetic pl
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Session 2: Vector invariant form}
+\begin{frame}{Vector invariant form}
 % [Marco]
 Implement the compressble Euler equations in vector invariant form
 \begin{equation*}
@@ -440,11 +440,12 @@ where $p = p_0 \left ( \frac{\varrho \theta R}{p_0} \right )^{\gamma}$ and $\Pi 
   \end{aligned}
 \end{equation*}
 
-A basic code implementing the strictly necessary components is already provided. Be careful that different approaches may heavily affect the \textbf{performance}.
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]{Example}
+A basic code implementing the strictly necessary components is already provided. Be careful that different approaches may heavily affect the \textbf{performance}.
+
 The vector invariant form can be written in general as
 \begin{equation*}
 \partial_t \mathbf{v} + \partial_x \mathbf{f}(\mathbf{u}) + \mathbf{H}(\mathbf{u}) \partial_x \mathbf{g}(\mathbf{u}) = \mathbf{0}.
@@ -553,6 +554,7 @@ end
 \end{frame}
 
 
+
 \begin{frame}{Vector invariant form}
 
 \begin{equation*}
@@ -591,7 +593,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Session: unified structure}
+\begin{frame}{Unified structure}
 % [Benedict]
 
 See \texttt{README.md}!

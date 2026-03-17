@@ -120,3 +120,7 @@ sol = solve(ode,
             RDPK3SpFSAL49(thread = Trixi.True());
             abstol = 1.0e-5, reltol = 1.0e-5, ode_default_options()...,
             callback = callbacks);
+
+pd = PlotData2D(sol)
+
+plot(pd["v1"])
