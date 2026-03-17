@@ -13,7 +13,7 @@ using LinearAlgebra: norm
 
 include("equations/compressible_euler_vectorinvariant_3d.jl")
 include("solver/noncons_kernel_3d.jl")
-include("utility_plots.jl")
+#include("utility_plots.jl")
 # Unperturbed balanced steady-state.
 # Returns primitive variables with only the velocity in longitudinal direction (rho, u, p).
 # The other velocity components are zero.
@@ -246,4 +246,4 @@ sol = solve(ode,
             abstol = 1.0e-5, reltol = 1.0e-5, ode_default_options()...,
             callback = callbacks);
 
-contour_baroclinic(sol, semi, trees_per_cube_face, 2 * (polydeg+  1), equations, T)
+#contour_baroclinic(sol, semi, trees_per_cube_face, 2 * (polydeg+  1), equations, T)
