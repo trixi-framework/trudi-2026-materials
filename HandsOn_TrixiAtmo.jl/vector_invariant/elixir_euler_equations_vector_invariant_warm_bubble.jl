@@ -68,7 +68,7 @@ basis = LobattoLegendreBasis(polydeg)
 #volume_flux = flux_volume_combined
 
 # In order to use the turbo version, please uncomment the next line:
-# include("solver/noncons_kernel_2d.jl")
+#include("solver/noncons_kernel_2d.jl")
 #surface_flux = flux_surface_combined
 #volume_flux = flux_volume_combined_turbo
 
