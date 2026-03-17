@@ -258,9 +258,11 @@ Main features of Atmospheric flows
  \item Initial motivation: specific requirements in projects ADAPTEX and ICON-DG \\[6pt]
 
  \begin{wideitemize}
-    \item ``Primite equations''\\ (i.e. at least moisture and precipitation,\\ \texttt{CompressibleEulerMulticomponentEquations3D} is not enough)
+    \item ``Primite equations''\\ (i.e. at least vapor, clouds, and rain,\\ \texttt{CompressibleEulerMulticomponentEquations3D} is not enough)
     \item Covariant equations, PDEs on manifolds
  \end{wideitemize}
+
+ \item Idea: Test bed for advanced numerics applicable to atmospheric flows
 
  \item Hardest part: figuring out the name \texttt{TrixiAtmo\textcolor{red}{s}.jl}
 
@@ -286,7 +288,7 @@ Main features of Atmospheric flows
 
 Each equation comes with: fluxes, initial conditions, boundary conditions, source terms, \texttt{cons2prim} et al, \texttt{max\_abs\_speeds} et al, ... \\[6pt]
 
-Equations differ in thermodynamic variables (total energy, kinetic plus internal, potential temperature, internal energy), form of the momentum equations (conservative, vector invariant), cloud microphysics, ...
+Equations differ in dimension, thermodynamic variables (total energy, kinetic plus internal, potential temperature, internal energy), form of the momentum equations (conservative, vector invariant), cloud microphysics, ...
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -309,17 +311,17 @@ Equations differ in thermodynamic variables (total energy, kinetic plus internal
 % [ALL]
 
 \begin{wideitemize}
- \item Unified initial data, source terms, compressible Euler equations (Cartesian)
+ \item IMEX methods: e.g. Rosenbrock and Multirate Infinitesimal Step (MIS) methods
 
- \item In-situ data analysis / statistics\\
+ \item Unified structure
+
+ \item Online data analysis / statistics\\
        (similar to \texttt{TimeSeriesCallback} but pointwise for whole field,
        used to evaluate Held-Suarez type simulations)
 
  \item In-situ visualization: also for 3D data, requires fast upscaling
 
  \item Unified post processing: e.g. to visualize projects of the globe
-
- \item IMEX methods: e.g. Rosenbrock and Multirate Infinitesimal Step (MIS) methods
 
  \item HEALPix grids: alternative to cubed sphere geometry, HERA5: ERA5 data on HEALPix grid
 \end{wideitemize}
@@ -330,12 +332,15 @@ Equations differ in thermodynamic variables (total energy, kinetic plus internal
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Session: moist test case [Benedict]}
+\begin{frame}{Session}
 % [Benedict]
 
-- moist mountain flow
+\vfill
+\begin{center}
+\Huge{HANDS ON !}
+\end{center}
+\vfill
 
-- fallback: dry / wet bubble
 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -343,7 +348,7 @@ Equations differ in thermodynamic variables (total energy, kinetic plus internal
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}{Session 1: Bottom Topography in DGMulti}
+\begin{frame}{Session: Bottom Topography in DGMulti}
 % [Philipp]
 \begin{itemize}
     \item The DGMulti solver enables more diverse geometries (triangles, prisms, ...)
@@ -581,6 +586,17 @@ end
 \end{enumerate}
 
 \end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Session: unified structure}
+% [Benedict]
+
+See \texttt{README.md}!
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\begin{frame}{Session: Baroclinic instability on steroids}

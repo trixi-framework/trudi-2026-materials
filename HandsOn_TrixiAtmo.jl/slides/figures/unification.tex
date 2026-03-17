@@ -18,10 +18,20 @@
         minimum height=1.2cm,
         font=\sffamily
     },
+    smalltile/.style={
+        rectangle,
+        rounded corners=6pt,
+        draw=black,
+        fill=uzkblau!30,
+        align=center,
+        minimum height=0.6cm,
+        font=\sffamily
+    },
     % Define the style for the arrows
     arrow/.style={
         ->,
         thick,
+        color=gray,
         >={Stealth[length=3mm, width=2mm]}
     }
 ]
@@ -63,10 +73,12 @@
     ]
         % Placed on the 4 corners.
         % You can adjust the xshift and yshift to control exactly how much they overlap!
-        \node[subtile] at ([xshift=-0.2cm, yshift=0.0cm]cartesian.north west) {Microphysics};
-        \node[subtile] at ([xshift=0.2cm, yshift=0.0cm]cartesian.north east)  {Thermodynamic\\state};
-        \node[subtile] (cartesian_par) at ([xshift=-0.2cm, yshift=0.0cm]cartesian.south west){Parameters};
-        \node[subtile] at ([xshift=0.2cm, yshift=0.0cm]cartesian.south east) {Thermodynamic\\equation};
+        \node[subtile] at ([xshift=-0.6cm, yshift=0.2cm]cartesian.north west)  {Dimension};
+        \node[subtile] at ([xshift=-0.4cm, yshift=-1.0cm]cartesian.north west) {Microphysics};
+        \node[subtile] at ([xshift=-0.4cm, yshift=0.2cm]cartesian.north east)  {Momentum\\equation};
+        \node[subtile] (cartesian_par) at ([xshift=0.4cm, yshift=-0.2cm]cartesian.south west){Parameters};
+        \node[subtile] at ([xshift=-0.4cm, yshift=-0.2cm]cartesian.south east) {Thermodynamic\\state};
+        \node[subtile] at ([xshift=0.2cm, yshift=1.0cm]cartesian.south east) {Thermodynamic\\equation};
     \end{scope}
 
 
@@ -86,11 +98,11 @@
         \end{tabular}
     };
 
-    \node[tile] (covariant_trafo_ic) at (-3.0, -5.5) {\small Transform\\initial condition};
-    \node[tile] (covariant_trafo_st) at (-6.0, -5.5) {\small Transform\\source terms};
+    \node[smalltile] (covariant_trafo_ic) at (-3.0, -5.5) {\small Transform i.c.};
+    \node[smalltile] (covariant_trafo_st) at (-6.0, -5.5) {\small Transform s.t.};
 
-    \node[tile] (cartesian_trafo_ic) at (6.0, -5.5) {\small Transform\\initial condition};
-    \node[tile] (cartesian_trafo_st) at (3.0, -5.5) {\small Transform\\source terms};
+    \node[smalltile] (cartesian_trafo_ic) at (6.0, -5.5) {\small Transform i.c.};
+    \node[smalltile] (cartesian_trafo_st) at (3.0, -5.5) {\small Transform s.t.};
 
     % ---------------------------------------------------
     % BOTTOM
