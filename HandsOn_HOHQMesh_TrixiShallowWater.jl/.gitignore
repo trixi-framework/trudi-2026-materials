@@ -1,0 +1,29 @@
+# LaTeX junk
+*.aux
+*.bbl
+*.blg
+*.log
+*.nav
+*.out
+*.pdf
+*.snm
+*.sty
+*.synctex.gz
+*.toc
+*.tex
+
+# HOHQMesh junk
+*.txt
+*.mesh
+*.inp
+*.tec
+
+# Julia junk
+*.jl
+
+# folders from runs
+out/*
+out_nodewise/*
+
+# results
+*.mp4
