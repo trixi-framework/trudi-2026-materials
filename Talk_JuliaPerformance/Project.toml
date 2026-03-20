@@ -1,0 +1,5 @@
+[deps]
+IntelITT = "c9b2f978-7543-4802-ae44-75068f23ee64"
+MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
+OrdinaryDiffEqLowStorageRK = "b0944070-b475-4768-8dec-fb6eb410534d"
+Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
